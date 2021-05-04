@@ -5,9 +5,6 @@ const http = require("http");
 const app = express();
 const server = http.createServer(app);
 
-app.get("/", (req, res) => {
-  res.redirect(`/server`);
-});
 app.get("/server", (req, res) => {
   res.send("This is the server.");
 });
