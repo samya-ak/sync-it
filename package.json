@@ -1,0 +1,27 @@
+{
+  "name": "sync-it",
+  "version": "1.0.0",
+  "description": "WebRTC app in the making",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "PROD=true node server.js",
+    "postinstall": "cd./client && npm install"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/samya-ak/sync-it.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/samya-ak/sync-it/issues"
+  },
+  "homepage": "https://github.com/samya-ak/sync-it#readme",
+  "dependencies": {
+    "dotenv": "^8.2.0",
+    "express": "^4.17.1",
+    "socket.io": "^4.0.1"
+  }
+}
