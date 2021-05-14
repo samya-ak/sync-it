@@ -6,6 +6,16 @@ const Reducer = (state, action) => {
         error: action.payload,
       };
 
+    case "ADD_ROOM":
+      const id = action.payload.id;
+      return {
+        ...state,
+        rooms: {
+          ...state.rooms,
+          [id]: action.payload.room,
+        },
+      };
+
     default:
       return state;
   }

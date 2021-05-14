@@ -1,22 +1,31 @@
 import { useHistory } from "react-router-dom";
 import { useContext } from "react";
+import Room from "../util/Room";
+import Peer from "../util/Peer";
 import { Context } from "../components/Store";
+import io from "socket.io-client";
 
 const Home = () => {
   let history = useHistory();
-  const [state, dispatch] = useContext(Context);
+  const [dispatch] = useContext(Context);
 
   const createRoom = (e) => {
+    const socket = io();
     const roomId = new Date().getTime();
+    const room = new Room(roomId);
+
+    socket.on("connect", () => {
+      const peer = new Peer(socket.id, roomId, socket);
+      room.peers = peer;
+    });
+    dispatch({ type: "ADD_ROOM", payload: { id: roomId, room } });
     history.push(`/rooms/${roomId}`);
-    console.log("Create room");
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
     console.log("Join Room");
-    dispatch({ type: "SET_ERROR", payload: "something error" });
-    console.log(state);
+    // console.log(state);
   };
 
   return (

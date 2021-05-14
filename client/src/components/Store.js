@@ -3,7 +3,7 @@ import Reducer from "./Reducer";
 
 const initialState = {
   error: null,
-  rooms: new Map(),
+  rooms: {},
 };
 
 const Store = ({ children }) => {
