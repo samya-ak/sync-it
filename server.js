@@ -7,10 +7,42 @@ const app = express();
 const server = http.createServer(app);
 const io = socket(server);
 
-let rooms = new Map();
-
 io.on("connection", (socket) => {
-  console.log("soc id>>>>", socket.id);
+  socket.on("create room", (roomId) => {
+    socket.join(roomId);
+  });
+
+  socket.on("join room", (roomId) => {
+    try {
+      const rooms = io.sockets.adapter.rooms;
+      const room = rooms.get(roomId);
+      let otherPeers = [];
+
+      if (rooms.has(roomId) && room.size) {
+        room.forEach((peer) => {
+          otherPeers.push(peer);
+        });
+        socket.join(roomId);
+        socket.data.room = roomId;
+
+        socket.emit("other peers", otherPeers);
+        socket.to(roomId).emit("new peer", socket.id);
+      } else {
+        console.log("no room: " + roomId);
+        socket.emit("socket-error", "Room doesn't Exist");
+      }
+    } catch (e) {
+      console.log(e);
+    }
+  });
+
+  socket.on("disconnect", () => {
+    socket.to(socket.data.room).emit("disconnected", socket.id);
+  });
+});
+
+io.of("/").adapter.on("create-room", (roomId) => {
+  console.log(`Room created: ${roomId}`);
 });
 
 app.get("/server", (req, res) => {

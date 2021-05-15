@@ -11,6 +11,10 @@ class Room {
   get peers() {
     return this._peers;
   }
+
+  get id() {
+    return this._id;
+  }
 }
 
 export default Room;

@@ -7,13 +7,9 @@ const Reducer = (state, action) => {
       };
 
     case "ADD_ROOM":
-      const id = action.payload.id;
       return {
         ...state,
-        rooms: {
-          ...state.rooms,
-          [id]: action.payload.room,
-        },
+        room: action.payload,
       };
 
     default:
