@@ -17,9 +17,9 @@ const Home = () => {
     const room = new Room(roomId);
     socket.emit("create room", roomId);
     joinRoom(room, socket);
-    history.push(`/rooms/${roomId}`);
     newPeerListener(socket, room);
     handleDisconnect(socket, room);
+    history.push(`/rooms/${roomId}`);
   };
 
   const handleDisconnect = (socket, room) => {
@@ -33,7 +33,7 @@ const Home = () => {
   const newPeerListener = (socket, room) => {
     socket.on("new peer", (socketId) => {
       console.log("new peer joined>>>", socketId);
-      const otherPeer = new Peer(socketId, room.id, null);
+      const otherPeer = new Peer(socketId, room.id, socket);
       room.peers = otherPeer;
       dispatch({ type: "ADD_ROOM", payload: room });
     });
@@ -43,8 +43,10 @@ const Home = () => {
     socket.on("connect", () => {
       const peer = new Peer(socket.id, room.id, socket);
       room.peers = peer;
+      dispatch({ type: "ADD_SELF", payload: socket.id });
       console.log("you>>>jr", socket.id);
     });
+
     dispatch({ type: "ADD_ROOM", payload: room });
   };
 
@@ -57,21 +59,17 @@ const Home = () => {
       socketError = true;
     });
 
-    console.log("after emit join room>>>");
-
     if (!socketError) {
-      console.log("before creating room>>>");
       const room = new Room(roomId);
       joinRoom(room, socket);
 
       socket.on("other peers", (otherPeers) => {
-        console.log("you>>>", socket.id);
         otherPeers.forEach((peer) => {
-          const otherPeer = new Peer(peer, room.id, null);
+          const otherPeer = new Peer(peer, room.id, socket);
           room.peers = otherPeer;
-          dispatch({ type: "ADD_ROOM", payload: room });
-          console.log("after dispatch");
+          otherPeer.call();
         });
+        dispatch({ type: "ADD_ROOM", payload: room });
       });
 
       newPeerListener(socket, room);

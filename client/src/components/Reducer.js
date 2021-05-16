@@ -12,6 +12,12 @@ const Reducer = (state, action) => {
         room: action.payload,
       };
 
+    case "ADD_SELF":
+      return {
+        ...state,
+        self: action.payload,
+      };
+
     default:
       return state;
   }

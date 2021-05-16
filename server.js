@@ -25,8 +25,8 @@ io.on("connection", (socket) => {
         socket.join(roomId);
         socket.data.room = roomId;
 
-        socket.emit("other peers", otherPeers);
         socket.to(roomId).emit("new peer", socket.id);
+        socket.emit("other peers", otherPeers);
       } else {
         console.log("no room: " + roomId);
         socket.emit("socket-error", "Room doesn't Exist");
@@ -36,6 +36,20 @@ io.on("connection", (socket) => {
     }
   });
 
+  socket.on("offer", (payload) => {
+    console.log("offer>>>", payload);
+    io.to(payload.target).emit("offer", payload);
+  });
+
+  socket.on("answer", (payload) => {
+    console.log("answer >>>", payload);
+    io.to(payload.target).emit("answer", payload);
+  });
+
+  socket.on("ice-candidate", (incoming) => {
+    io.to(incoming.target).emit("ice-candidate", incoming.candidate);
+  });
+
   socket.on("disconnect", () => {
     socket.to(socket.data.room).emit("disconnected", socket.id);
   });
@@ -43,10 +57,6 @@ io.on("connection", (socket) => {
 
 io.of("/").adapter.on("create-room", (roomId) => {
   console.log(`Room created: ${roomId}`);
-});
-
-app.get("/server", (req, res) => {
-  res.send("This is the server.");
 });
 
 if (process.env.PROD) {
