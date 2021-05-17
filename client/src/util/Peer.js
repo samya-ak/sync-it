@@ -1,11 +1,12 @@
 export default class Peer {
-  constructor(id, roomId, socket) {
+  constructor(id, roomId, socket, dispatch) {
     this._id = id;
     this._roomId = roomId;
     this._socket = socket;
     this._rtcPeer = null;
     this._dataChannel = null;
     this._receiveChannel = null;
+    this._dispatch = dispatch;
 
     this._socket.on("offer", this.handleRecieveCall.bind(this));
 
@@ -142,11 +143,19 @@ export default class Peer {
   }
 
   handleMessageReceived(e) {
-    console.log("Got this message>>> ", e.data);
+    const message = {
+      value: e.data,
+      yours: false,
+      from: this._id,
+      time: new Date(),
+    };
+
+    console.log(this._dispatch);
+    console.log("Got this message>>> ", message);
+    this._dispatch({ type: "UPDATE_MESSAGES", payload: message });
   }
 
   sendMessage(msg) {
-    //if there is this._socket I am the caller else I am callee
     console.log("in send Message>>>", this);
     if (this._receiveChannel) {
       this._receiveChannel.send(msg);

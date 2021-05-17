@@ -5,6 +5,8 @@ const initialState = {
   error: null,
   room: null,
   self: null,
+  username: null,
+  messages: [],
 };
 
 const Store = ({ children }) => {

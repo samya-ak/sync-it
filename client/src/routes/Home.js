@@ -33,7 +33,7 @@ const Home = () => {
   const newPeerListener = (socket, room) => {
     socket.on("new peer", (socketId) => {
       console.log("new peer joined>>>", socketId);
-      const otherPeer = new Peer(socketId, room.id, socket);
+      const otherPeer = new Peer(socketId, room.id, socket, dispatch);
       room.peers = otherPeer;
       dispatch({ type: "ADD_ROOM", payload: room });
     });
@@ -41,7 +41,7 @@ const Home = () => {
 
   const joinRoom = (room, socket) => {
     socket.on("connect", () => {
-      const peer = new Peer(socket.id, room.id, socket);
+      const peer = new Peer(socket.id, room.id, socket, dispatch);
       room.peers = peer;
       dispatch({ type: "ADD_SELF", payload: socket.id });
       console.log("you>>>jr", socket.id);
@@ -65,7 +65,7 @@ const Home = () => {
 
       socket.on("other peers", (otherPeers) => {
         otherPeers.forEach((peer) => {
-          const otherPeer = new Peer(peer, room.id, socket);
+          const otherPeer = new Peer(peer, room.id, socket, dispatch);
           room.peers = otherPeer;
           otherPeer.call();
         });

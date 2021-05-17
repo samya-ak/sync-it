@@ -1,6 +1,6 @@
 import { Context } from "../components/Store";
 import { useContext, useEffect, useState } from "react";
-//Need to make logged in instance of Peer available here.
+
 const Room = () => {
   const [state, dispatch] = useContext(Context);
   const [self, setSelf] = useState("");
@@ -18,10 +18,16 @@ const Room = () => {
     //send same message to all connected peers
     for (let [key, value] of state.room.peers) {
       if (key !== self.id) {
-        console.log("sending message as>>>", value);
+        console.log("sending message to>>>", value);
         value.sendMessage(msg);
       }
     }
+    const message = {
+      value: msg,
+      yours: true,
+      time: new Date(),
+    };
+    dispatch({ type: "UPDATE_MESSAGES", payload: message });
   };
 
   return (

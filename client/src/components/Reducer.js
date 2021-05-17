@@ -18,6 +18,18 @@ const Reducer = (state, action) => {
         self: action.payload,
       };
 
+    case "ADD_USERNAME":
+      return {
+        ...state,
+        username: action.payload,
+      };
+
+    case "UPDATE_MESSAGES":
+      return {
+        ...state,
+        messages: [...state.messages, action.payload],
+      };
+
     default:
       return state;
   }
