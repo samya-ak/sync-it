@@ -12,7 +12,7 @@ function App() {
   console.log("app", state);
   return (
     <Router>
-      <div className="App center">
+      <div className="">
         <Switch>
           <Route exact path="/">
             <Home />
