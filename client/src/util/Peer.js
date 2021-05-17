@@ -36,20 +36,30 @@ export default class Peer {
       ],
     });
 
+    peer.onicecandidate = (e) => this.handleICECandidateEvent(e);
+    // peer.ontrack = handleTrackEvent;
+    peer.onnegotiationneeded = () => this.handleNegotiationNeededEvent(peer);
+
     if (caller) {
-      this._dataChannel = peer.createDataChannel("channel");
+      this._dataChannel = peer.createDataChannel(this._id);
       this._dataChannel.onmessage = (e) => this.handleMessageReceived(e);
+
+      this._dataChannel.onopen = () => {
+        console.log("Caller datachannel opened", this);
+      };
+
+      this._dataChannel.onclose = () => {
+        console.log("Caller datachannel closed", this);
+      };
     } else {
+      console.log("waiting for datachannel to open>>>", this);
       peer.ondatachannel = (e) => {
+        console.log("datachannel opened>>>", this);
         this._receiveChannel = e.channel;
         this._receiveChannel.onmessage = (e) => this.handleMessageReceived(e);
         console.log("receive channel created>>>>", this);
       };
     }
-
-    peer.onicecandidate = (e) => this.handleICECandidateEvent(e);
-    // peer.ontrack = handleTrackEvent;
-    peer.onnegotiationneeded = () => this.handleNegotiationNeededEvent(peer);
 
     return peer;
   }
@@ -58,8 +68,10 @@ export default class Peer {
     if (e.candidate) {
       const payload = {
         target: this._id,
+        caller: this._socket.id,
         candidate: e.candidate,
       };
+      console.log("ice candidate emitting...", e);
       this._socket.emit("ice-candidate", payload);
     }
   }
@@ -119,8 +131,11 @@ export default class Peer {
   }
 
   handleNewICECandidateMsg(incoming) {
+    console.log("new ice candidate", incoming);
+    console.log("new ice candidate for", this);
     if (incoming.caller === this._id) {
-      const candidate = new RTCIceCandidate(incoming);
+      console.log("handling new ice candidate...");
+      const candidate = new RTCIceCandidate(incoming.candidate);
 
       this._rtcPeer.addIceCandidate(candidate).catch((e) => console.log(e));
     }
