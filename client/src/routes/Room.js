@@ -6,6 +6,8 @@ import Paper from "@material-ui/core/Paper";
 import Card from "@material-ui/core/Card";
 import { TextareaAutosize } from "@material-ui/core";
 import CardContent from "@material-ui/core/CardContent";
+import IconButton from "@material-ui/core/IconButton";
+import SendRoundedIcon from "@material-ui/icons/SendRounded";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -30,8 +32,13 @@ const useStyles = makeStyles((theme) => ({
     width: "auto",
     maxWidth: "65%",
     borderRadius: "19px",
-    backgroundColor: "#ada",
     color: "white",
+  },
+  others: {
+    backgroundColor: "#9ba2a2",
+  },
+  yours: {
+    backgroundColor: "#00d48b",
   },
 }));
 
@@ -78,18 +85,25 @@ const Room = () => {
     //     <button>Send</button>
     //   </form>
     // </div>
-    <Grid container spacing={2} style={{ height: "100vh" }}>
-      <Grid item md={3}>
+    <Grid container style={{ height: "100vh" }} spacing={1}>
+      <Grid item md={3} sm={3}>
         <Paper className={classes.paper}>video chat here</Paper>
       </Grid>
-      <Grid item md={6}>
+      <Grid item md={6} sm={6}>
         <Paper className={classes.paper}>video player here</Paper>
       </Grid>
-      <Grid item container md={3} direction={"column"} spacing={1}>
-        <Grid item style={{ height: "20%" }}>
+      <Grid
+        item
+        container
+        md={3}
+        sm={3}
+        direction={"column"}
+        justify="space-between"
+      >
+        <Grid item style={{ height: "10vh" }}>
           <Paper className={classes.paper}>online members</Paper>
         </Grid>
-        <Grid item style={{ height: "80%" }}>
+        <Grid item style={{ height: "88vh" }}>
           <Paper
             className={classes.paper}
             style={{ padding: "0.7em", boxSizing: "border-box" }}
@@ -101,11 +115,14 @@ const Room = () => {
               <div
                 style={{
                   display: "flex",
-                  justifyContent: "space-around",
+                  justifyContent: "space-between",
                   marginBottom: "10px",
                 }}
               >
-                <Card className={classes.card}>
+                <Card
+                  className={`${classes.card} ${classes.others}`}
+                  elevation={0}
+                >
                   <CardContent style={{ padding: "9px" }}>
                     This is the first message. <br /> It is sent by someone that
                     is not me.
@@ -117,6 +134,7 @@ const Room = () => {
                     alignItems: "center",
                     display: "flex",
                     color: " #878785",
+                    fontWeight: "bold",
                   }}
                 >
                   Someone. 5:00 pm
@@ -129,31 +147,10 @@ const Room = () => {
                   marginBottom: "10px",
                 }}
               >
-                <Card className={classes.card}>
-                  <CardContent style={{ padding: "9px" }}>
-                    This is the first message. <br /> It is sent by someone that
-                    is not me.
-                  </CardContent>
-                </Card>
-                <div
-                  style={{
-                    fontSize: "12px",
-                    alignItems: "center",
-                    display: "flex",
-                    color: " #878785",
-                  }}
+                <Card
+                  className={`${classes.card} ${classes.others}`}
+                  elevation={0}
                 >
-                  Someone. 5:00 pm
-                </div>
-              </div>
-              <div
-                style={{
-                  display: "flex",
-                  justifyContent: "space-around",
-                  marginBottom: "10px",
-                }}
-              >
-                <Card className={classes.card}>
                   <CardContent style={{ padding: "9px" }}>
                     This is the first message. <br /> It is sent by someone that
                     is not me.
@@ -165,126 +162,7 @@ const Room = () => {
                     alignItems: "center",
                     display: "flex",
                     color: " #878785",
-                  }}
-                >
-                  Someone. 5:00 pm
-                </div>
-              </div>
-              <div
-                style={{
-                  display: "flex",
-                  justifyContent: "space-around",
-                  marginBottom: "10px",
-                }}
-              >
-                <Card className={classes.card}>
-                  <CardContent style={{ padding: "9px" }}>
-                    This is the first message. <br /> It is sent by someone that
-                    is not me.
-                  </CardContent>
-                </Card>
-                <div
-                  style={{
-                    fontSize: "12px",
-                    alignItems: "center",
-                    display: "flex",
-                    color: " #878785",
-                  }}
-                >
-                  Someone. 5:00 pm
-                </div>
-              </div>
-              <div
-                style={{
-                  display: "flex",
-                  justifyContent: "space-around",
-                  marginBottom: "10px",
-                }}
-              >
-                <Card className={classes.card}>
-                  <CardContent style={{ padding: "9px" }}>
-                    This is the first message. <br /> It is sent by someone that
-                    is not me.
-                  </CardContent>
-                </Card>
-                <div
-                  style={{
-                    fontSize: "12px",
-                    alignItems: "center",
-                    display: "flex",
-                    color: " #878785",
-                  }}
-                >
-                  Someone. 5:00 pm
-                </div>
-              </div>
-              <div
-                style={{
-                  display: "flex",
-                  justifyContent: "space-around",
-                  marginBottom: "10px",
-                }}
-              >
-                <Card className={classes.card}>
-                  <CardContent style={{ padding: "9px" }}>
-                    This is the first message. <br /> It is sent by someone that
-                    is not me.
-                  </CardContent>
-                </Card>
-                <div
-                  style={{
-                    fontSize: "12px",
-                    alignItems: "center",
-                    display: "flex",
-                    color: " #878785",
-                  }}
-                >
-                  Someone. 5:00 pm
-                </div>
-              </div>
-              <div
-                style={{
-                  display: "flex",
-                  justifyContent: "space-around",
-                  marginBottom: "10px",
-                }}
-              >
-                <Card className={classes.card}>
-                  <CardContent style={{ padding: "9px" }}>
-                    This is the first message. <br /> It is sent by someone that
-                    is not me.
-                  </CardContent>
-                </Card>
-                <div
-                  style={{
-                    fontSize: "12px",
-                    alignItems: "center",
-                    display: "flex",
-                    color: " #878785",
-                  }}
-                >
-                  Someone. 5:00 pm
-                </div>
-              </div>
-              <div
-                style={{
-                  display: "flex",
-                  justifyContent: "space-around",
-                  marginBottom: "10px",
-                }}
-              >
-                <Card className={classes.card}>
-                  <CardContent style={{ padding: "9px" }}>
-                    This is the first message. <br /> It is sent by someone that
-                    is not me.
-                  </CardContent>
-                </Card>
-                <div
-                  style={{
-                    fontSize: "12px",
-                    alignItems: "center",
-                    display: "flex",
-                    color: " #878785",
+                    fontWeight: "bold",
                   }}
                 >
                   Someone. 5:00 pm
@@ -297,7 +175,10 @@ const Room = () => {
                   flexDirection: "row-reverse",
                 }}
               >
-                <Card className={classes.card}>
+                <Card
+                  className={`${classes.card} ${classes.yours}`}
+                  elevation={0}
+                >
                   <CardContent style={{ padding: "9px" }}>
                     This is the second message.
                   </CardContent>
@@ -308,6 +189,7 @@ const Room = () => {
                     alignItems: "center",
                     display: "flex",
                     color: " #878785",
+                    fontWeight: "bold",
                   }}
                 >
                   Someone. 5:00 pm
@@ -326,11 +208,30 @@ const Room = () => {
               }}
             >
               <TextareaAutosize
-                style={{ height: "100%", width: "80%" }}
+                rowsMin={4}
+                rowsMax={4}
+                style={{
+                  width: "75%",
+                  outline: "none",
+                  resize: "none",
+                  borderColor: "#eee",
+                  borderRadius: "13px",
+                  padding: "8px",
+                }}
                 aria-label="empty textarea"
                 placeholder="Say something ..."
               />
-              <button>Send</button>
+
+              <IconButton
+                aria-label="send message"
+                component="span"
+                style={{
+                  color: "#fff",
+                  backgroundColor: "#00a36b",
+                }}
+              >
+                <SendRoundedIcon />
+              </IconButton>
             </div>
           </Paper>
         </Grid>

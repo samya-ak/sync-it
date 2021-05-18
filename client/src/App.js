@@ -15,7 +15,9 @@ function App() {
       <div className="">
         <Switch>
           <Route exact path="/">
-            <Home />
+            <div className="center">
+              <Home />
+            </div>
           </Route>
           <Route exact path="/rooms/:id">
             <Room />
