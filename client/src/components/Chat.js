@@ -18,6 +18,7 @@ const useStyles = makeStyles((theme) => ({
   },
   card: {
     width: "auto",
+    minWidth: "130px",
     maxWidth: "65%",
     borderRadius: "19px",
     color: "white",
@@ -37,6 +38,7 @@ const useStyles = makeStyles((theme) => ({
     justifyContent: "space-between",
     marginBottom: "10px",
     whiteSpace: "pre-wrap",
+    minWidth: "120px",
   },
   yoursMessage: {
     display: "flex",
@@ -44,6 +46,7 @@ const useStyles = makeStyles((theme) => ({
     flexDirection: "row-reverse",
     marginBottom: "10px",
     whiteSpace: "pre-wrap",
+    minWidth: "120px",
   },
   author: {
     fontSize: "12px",
@@ -82,12 +85,12 @@ const Chat = ({ self }) => {
   const handleSubmit = (e) => {
     e.preventDefault();
     console.log("sending>>>", msg);
-    console.log("props", self);
+
     // send same message to all connected peers
     for (let [key, value] of state.room.peers) {
       if (key !== self.id) {
         console.log("sending message to>>>", value);
-        value.sendMessage(msg);
+        value.sendMessage(JSON.stringify({ msg }));
       }
     }
     const message = {
@@ -110,6 +113,7 @@ const Chat = ({ self }) => {
               className={
                 message.yours ? classes.yoursMessage : classes.othersMessage
               }
+              key={key}
             >
               <Card
                 className={`${classes.card} ${
@@ -121,7 +125,17 @@ const Chat = ({ self }) => {
                   {message.value}
                 </CardContent>
               </Card>
-              <div className={classes.author}>Someone. 5:00 pm</div>
+              <div className={classes.author}>
+                {message.from
+                  ? state.room.peers.get(message.from).name
+                  : state.username}
+                &nbsp;{" "}
+                {message.time.toLocaleString("en-US", {
+                  hour: "numeric",
+                  minute: "numeric",
+                  hour12: true,
+                })}
+              </div>
             </div>
           );
         })}

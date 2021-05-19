@@ -7,6 +7,7 @@ export default class Peer {
     this._dataChannel = null;
     this._receiveChannel = null;
     this._dispatch = dispatch;
+    this._username = "default";
 
     this._socket.on("offer", this.handleRecieveCall.bind(this));
 
@@ -17,6 +18,10 @@ export default class Peer {
 
   get id() {
     return this._id;
+  }
+
+  get name() {
+    return this._username;
   }
 
   call() {
@@ -143,16 +148,21 @@ export default class Peer {
   }
 
   handleMessageReceived(e) {
-    const message = {
-      value: e.data,
-      yours: false,
-      from: this._id,
-      time: new Date(),
-    };
-
-    console.log(this._dispatch);
-    console.log("Got this message>>> ", message);
-    this._dispatch({ type: "UPDATE_MESSAGES", payload: message });
+    const message = JSON.parse(e.data);
+    console.log("Got this message -----", message);
+    if (message.isName) {
+      this._username = message.username;
+      this._dispatch({ type: "REFRESH" });
+    } else {
+      const newMessage = {
+        value: message.msg,
+        yours: false,
+        from: this._id,
+        time: new Date(),
+      };
+      console.log("Got this message>>> ", newMessage);
+      this._dispatch({ type: "UPDATE_MESSAGES", payload: newMessage });
+    }
   }
 
   sendMessage(msg) {

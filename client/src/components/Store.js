@@ -5,7 +5,7 @@ const initialState = {
   error: null,
   room: null,
   self: null,
-  username: null,
+  username: "default",
   messages: [],
 };
 
