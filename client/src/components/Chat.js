@@ -5,12 +5,14 @@ import CardContent from "@material-ui/core/CardContent";
 import IconButton from "@material-ui/core/IconButton";
 import SendRoundedIcon from "@material-ui/icons/SendRounded";
 import { makeStyles } from "@material-ui/core/styles";
+import { useState, useContext } from "react";
+import { Context } from "../components/Store";
 
 const useStyles = makeStyles((theme) => ({
   paper: {
     height: "100%",
     width: "100%",
-    backgroundColor: "#eee",
+    backgroundColor: "#EAECEE",
     padding: "0.7em",
     boxSizing: "border-box",
   },
@@ -34,11 +36,14 @@ const useStyles = makeStyles((theme) => ({
     display: "flex",
     justifyContent: "space-between",
     marginBottom: "10px",
+    whiteSpace: "pre-wrap",
   },
   yoursMessage: {
     display: "flex",
     justifyContent: "space-between",
     flexDirection: "row-reverse",
+    marginBottom: "10px",
+    whiteSpace: "pre-wrap",
   },
   author: {
     fontSize: "12px",
@@ -59,7 +64,7 @@ const useStyles = makeStyles((theme) => ({
     width: "75%",
     outline: "none",
     resize: "none",
-    borderColor: "#eee",
+    borderColor: "#CCD1D1 ",
     borderRadius: "13px",
     padding: "8px",
   },
@@ -69,30 +74,57 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const Chat = () => {
+const Chat = ({ self }) => {
   const classes = useStyles();
+  const [msg, setMsg] = useState("");
+  const [state, dispatch] = useContext(Context);
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    console.log("sending>>>", msg);
+    console.log("props", self);
+    // send same message to all connected peers
+    for (let [key, value] of state.room.peers) {
+      if (key !== self.id) {
+        console.log("sending message to>>>", value);
+        value.sendMessage(msg);
+      }
+    }
+    const message = {
+      value: msg,
+      yours: true,
+      time: new Date(),
+    };
+    dispatch({ type: "UPDATE_MESSAGES", payload: message });
+    setMsg("");
+  };
 
   return (
     <Paper className={classes.paper}>
+      {console.log("msgs>>>", state.messages)}
       {/* Messages */}
       <div className={`custom-scrollbar ${classes.messages}`}>
-        <div className={classes.othersMessage}>
-          <Card className={`${classes.card} ${classes.others}`} elevation={0}>
-            <CardContent style={{ padding: "9px" }}>
-              This is the first message. <br /> It is sent by someone that is
-              not me.
-            </CardContent>
-          </Card>
-          <div className={classes.author}>Someone. 5:00 pm</div>
-        </div>
-        <div className={classes.yoursMessage}>
-          <Card className={`${classes.card} ${classes.yours}`} elevation={0}>
-            <CardContent style={{ padding: "9px" }}>
-              This is the second message.
-            </CardContent>
-          </Card>
-          <div className={classes.author}>Someone. 5:00 pm</div>
-        </div>
+        {state.messages.map((message, key) => {
+          return (
+            <div
+              className={
+                message.yours ? classes.yoursMessage : classes.othersMessage
+              }
+            >
+              <Card
+                className={`${classes.card} ${
+                  message.yours ? classes.yours : classes.others
+                }`}
+                elevation={0}
+              >
+                <CardContent style={{ padding: "9px" }}>
+                  {message.value}
+                </CardContent>
+              </Card>
+              <div className={classes.author}>Someone. 5:00 pm</div>
+            </div>
+          );
+        })}
       </div>
 
       {/* Message Sender */}
@@ -103,11 +135,14 @@ const Chat = () => {
           className={classes.textArea}
           aria-label="empty textarea"
           placeholder="Say something ..."
+          value={msg}
+          onChange={(e) => setMsg(e.target.value)}
         />
 
         <IconButton
           aria-label="send message"
           component="span"
+          onClick={handleSubmit}
           className={classes.sendMessage}
         >
           <SendRoundedIcon />

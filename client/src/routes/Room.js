@@ -9,14 +9,13 @@ const useStyles = makeStyles((theme) => ({
   paper: {
     height: "100%",
     width: "100%",
-    backgroundColor: "#eee",
+    backgroundColor: "#EAECEE ",
   },
 }));
 
 const Room = () => {
   const [state, dispatch] = useContext(Context);
   const [self, setSelf] = useState("");
-  const [msg, setMsg] = useState("");
   const classes = useStyles();
 
   useEffect(() => {
@@ -25,23 +24,6 @@ const Room = () => {
       setSelf(self);
     }
   }, [state]);
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    //send same message to all connected peers
-    for (let [key, value] of state.room.peers) {
-      if (key !== self.id) {
-        console.log("sending message to>>>", value);
-        value.sendMessage(msg);
-      }
-    }
-    const message = {
-      value: msg,
-      yours: true,
-      time: new Date(),
-    };
-    dispatch({ type: "UPDATE_MESSAGES", payload: message });
-  };
 
   return (
     // <div>
@@ -60,9 +42,11 @@ const Room = () => {
       <Grid item md={3} sm={3}>
         <Paper className={classes.paper}>video chat here</Paper>
       </Grid>
+
       <Grid item md={6} sm={6}>
         <Paper className={classes.paper}>video player here</Paper>
       </Grid>
+
       <Grid
         item
         container
@@ -72,10 +56,14 @@ const Room = () => {
         justify="space-between"
       >
         <Grid item style={{ height: "10vh" }}>
-          <Paper className={classes.paper}>online members</Paper>
+          <Paper className={classes.paper}>
+            Enter Your Name:
+            <div>{self.username || self.id} (You)</div>
+          </Paper>
         </Grid>
+
         <Grid item style={{ height: "88vh" }}>
-          <Chat />
+          <Chat self={self} />
         </Grid>
       </Grid>
     </Grid>
