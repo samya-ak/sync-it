@@ -1,5 +1,5 @@
 export default class Peer {
-  constructor(id, roomId, socket, dispatch) {
+  constructor(id, roomId, socket, dispatch, sendingStream) {
     this._id = id;
     this._roomId = roomId;
     this._socket = socket;
@@ -7,7 +7,9 @@ export default class Peer {
     this._dataChannel = null;
     this._receiveChannel = null;
     this._dispatch = dispatch;
-    this._username = "default";
+    this._username = "Anonymous";
+    this._sendingStream = sendingStream;
+    this._receivingStream = null;
 
     this._socket.on("offer", this.handleRecieveCall.bind(this));
 
@@ -24,8 +26,19 @@ export default class Peer {
     return this._username;
   }
 
+  get sendingStream() {
+    return this._sendingStream;
+  }
+
+  get receivingStream() {
+    return this._receivingStream;
+  }
+
   call() {
     this._rtcPeer = this.createRTCPeer(true);
+    this._sendingStream
+      .getTracks()
+      .forEach((track) => this._rtcPeer.addTrack(track, this._sendingStream));
   }
 
   createRTCPeer(caller = false) {
@@ -43,7 +56,7 @@ export default class Peer {
     });
 
     peer.onicecandidate = (e) => this.handleICECandidateEvent(e);
-    // peer.ontrack = handleTrackEvent;
+    peer.ontrack = (e) => this.handleTrackEvent(e);
     peer.onnegotiationneeded = () => this.handleNegotiationNeededEvent(peer);
 
     if (caller) {
@@ -68,6 +81,12 @@ export default class Peer {
     }
 
     return peer;
+  }
+
+  handleTrackEvent(e) {
+    this._receivingStream = e.streams[0];
+    this._dispatch({ type: "REFRESH", payload: 1 });
+    console.log("handle Track event fired for>>>", this);
   }
 
   handleICECandidateEvent(e) {
@@ -108,6 +127,13 @@ export default class Peer {
       const desc = new RTCSessionDescription(incoming.sdp);
       this._rtcPeer
         .setRemoteDescription(desc)
+        .then(() => {
+          this._sendingStream
+            .getTracks()
+            .forEach((track) =>
+              this._rtcPeer.addTrack(track, this._sendingStream)
+            );
+        })
         .then(() => {
           return this._rtcPeer.createAnswer();
         })
@@ -152,7 +178,7 @@ export default class Peer {
     console.log("Got this message -----", message);
     if (message.isName) {
       this._username = message.username;
-      this._dispatch({ type: "REFRESH" });
+      this._dispatch({ type: "REFRESH", payload: 1 });
     } else {
       const newMessage = {
         value: message.msg,

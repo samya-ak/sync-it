@@ -30,6 +30,13 @@ const Reducer = (state, action) => {
         messages: [...state.messages, action.payload],
       };
 
+    case "REFRESH":
+      console.log("refresh occured>>>");
+      return {
+        ...state,
+        refresh: state.refresh + action.payload,
+      };
+
     default:
       return state;
   }

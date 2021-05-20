@@ -1,5 +1,5 @@
 import { useHistory } from "react-router-dom";
-import { useContext, useState } from "react";
+import { useContext, useState, useEffect, useRef } from "react";
 import Room from "../util/Room";
 import Peer from "../util/Peer";
 import { Context } from "../components/Store";
@@ -10,6 +10,15 @@ const Home = () => {
   const [state, dispatch] = useContext(Context);
   const [roomId, setRoomId] = useState("");
   let socketError = false;
+  const myStream = useRef();
+
+  useEffect(() => {
+    navigator.mediaDevices
+      .getUserMedia({ audio: false, video: true })
+      .then((stream) => {
+        myStream.current = stream;
+      });
+  }, []);
 
   const createRoom = (e) => {
     const socket = io();
@@ -33,7 +42,13 @@ const Home = () => {
   const newPeerListener = (socket, room) => {
     socket.on("new peer", (socketId) => {
       console.log("new peer joined>>>", socketId);
-      const otherPeer = new Peer(socketId, room.id, socket, dispatch);
+      const otherPeer = new Peer(
+        socketId,
+        room.id,
+        socket,
+        dispatch,
+        myStream.current
+      );
       room.peers = otherPeer;
       dispatch({ type: "ADD_ROOM", payload: room });
     });
@@ -41,7 +56,13 @@ const Home = () => {
 
   const joinRoom = (room, socket) => {
     socket.on("connect", () => {
-      const peer = new Peer(socket.id, room.id, socket, dispatch);
+      const peer = new Peer(
+        socket.id,
+        room.id,
+        socket,
+        dispatch,
+        myStream.current
+      );
       room.peers = peer;
       dispatch({ type: "ADD_SELF", payload: socket.id });
       console.log("you>>>jr", socket.id);
@@ -65,7 +86,13 @@ const Home = () => {
 
       socket.on("other peers", (otherPeers) => {
         otherPeers.forEach((peer) => {
-          const otherPeer = new Peer(peer, room.id, socket, dispatch);
+          const otherPeer = new Peer(
+            peer,
+            room.id,
+            socket,
+            dispatch,
+            myStream.current
+          );
           room.peers = otherPeer;
           otherPeer.call();
         });

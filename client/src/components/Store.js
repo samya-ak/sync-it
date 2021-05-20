@@ -5,8 +5,9 @@ const initialState = {
   error: null,
   room: null,
   self: null,
-  username: "default",
+  username: "Anonymous",
   messages: [],
+  refresh: 0,
 };
 
 const Store = ({ children }) => {

@@ -5,7 +5,7 @@ import Grid from "@material-ui/core/Grid";
 import Paper from "@material-ui/core/Paper";
 import Chat from "../components/Chat";
 import TextField from "@material-ui/core/TextField";
-import { FullscreenExitTwoTone } from "@material-ui/icons";
+import VideoChat from "../components/VideoChat";
 
 const useStyles = makeStyles((theme) => ({
   paper: {
@@ -24,6 +24,7 @@ const Room = () => {
   const [state, dispatch] = useContext(Context);
   const [self, setSelf] = useState("");
   const [username, setUsername] = useState(self.id);
+  const [peers, setPeers] = useState([]);
 
   const classes = useStyles();
 
@@ -32,6 +33,8 @@ const Room = () => {
       const self = state.room.peers.get(state.self);
       setSelf(self);
     }
+
+    setPeers(Array.from(state.room.peers.values()));
   }, [state]);
 
   const sendUsername = (e) => {
@@ -49,7 +52,7 @@ const Room = () => {
   return (
     <Grid container style={{ height: "100vh" }} spacing={1}>
       <Grid item md={3} sm={3}>
-        <Paper className={classes.paper}>video chat here</Paper>
+        <VideoChat self={self} state={state} peers={peers} />
       </Grid>
 
       <Grid item md={6} sm={6}>
