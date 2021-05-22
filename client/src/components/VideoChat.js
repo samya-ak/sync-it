@@ -6,7 +6,6 @@ import VideocamOffIcon from "@material-ui/icons/VideocamOff";
 import MicIcon from "@material-ui/icons/Mic";
 import MicOffIcon from "@material-ui/icons/MicOff";
 import { useState } from "react";
-import Divider from "@material-ui/core/Divider";
 
 const useStyles = makeStyles((theme) => ({
   paper: {
@@ -45,6 +44,11 @@ const VideoChat = ({ state, self, peers }) => {
   const [isMicOn, setIsMicOn] = useState(false);
   const [isVideoOn, setIsVideoOn] = useState(false);
 
+  const mute = (e, sendingStream) => {
+    console.log("stream------>", sendingStream.getTracks());
+    setIsMicOn(!isMicOn);
+  };
+
   return (
     <Paper className={classes.paper}>
       {peers.map((peer, key) => {
@@ -52,14 +56,14 @@ const VideoChat = ({ state, self, peers }) => {
           return (
             <div key={key} className={classes.selfStream}>
               <div style={{ width: "80%", marginTop: "15px" }}>
-                <Video stream={peer.sendingStream} />
+                <Video stream={peer.sendingStream} isMine={true} />
               </div>
               <div>
                 {peer.name}(You)
                 {isMicOn ? (
                   <MicIcon
                     className={classes.tealVariant}
-                    onClick={(e) => setIsMicOn(!isMicOn)}
+                    onClick={(e) => mute(e, peer.sendingStream)}
                   />
                 ) : (
                   <MicOffIcon
@@ -86,10 +90,10 @@ const VideoChat = ({ state, self, peers }) => {
             <div key={key} className={classes.otherStream}>
               {console.log(
                 "receive others stream <---------------",
-                peer.receivingStream
+                peer.receivingStream && peer.receivingStream.getTracks()
               )}
               <div style={{ width: "80%", marginTop: "15px" }}>
-                <Video stream={peer.receivingStream} />
+                <Video stream={peer.receivingStream} isMine={false} />
               </div>
               <div>
                 <div>
