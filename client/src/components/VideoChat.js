@@ -44,9 +44,19 @@ const VideoChat = ({ state, self, peers }) => {
   const [isMicOn, setIsMicOn] = useState(false);
   const [isVideoOn, setIsVideoOn] = useState(false);
 
-  const mute = (e, sendingStream) => {
-    console.log("stream------>", sendingStream.getTracks());
+  const toggleMute = (e) => {
+    // console.log("stream------>", sendingStream.getTracks());
     setIsMicOn(!isMicOn);
+    const toggleSound = new Event("toggleMute");
+    console.log("Event dispatched --->");
+    document.dispatchEvent(toggleSound);
+  };
+
+  const toggleVideoStream = (e) => {
+    setIsVideoOn(!isVideoOn);
+    const toggleVideo = new Event("toggleVideoStream");
+    console.log("Event dispatched video stream--->");
+    document.dispatchEvent(toggleVideo);
   };
 
   return (
@@ -63,23 +73,23 @@ const VideoChat = ({ state, self, peers }) => {
                 {isMicOn ? (
                   <MicIcon
                     className={classes.tealVariant}
-                    onClick={(e) => mute(e, peer.sendingStream)}
+                    onClick={(e) => toggleMute(e)}
                   />
                 ) : (
                   <MicOffIcon
                     className={classes.redVariant}
-                    onClick={(e) => setIsMicOn(!isMicOn)}
+                    onClick={(e) => toggleMute(e)}
                   />
                 )}
                 {isVideoOn ? (
                   <VideocamIcon
                     className={classes.tealVariant}
-                    onClick={(e) => setIsVideoOn(!isVideoOn)}
+                    onClick={(e) => toggleVideoStream(e)}
                   />
                 ) : (
                   <VideocamOffIcon
                     className={classes.redVariant}
-                    onClick={(e) => setIsVideoOn(!isVideoOn)}
+                    onClick={(e) => toggleVideoStream(e)}
                   />
                 )}
               </div>
@@ -98,27 +108,15 @@ const VideoChat = ({ state, self, peers }) => {
               <div>
                 <div>
                   {peer.name}
-                  {isMicOn ? (
-                    <MicIcon
-                      className={classes.tealVariant}
-                      onClick={(e) => setIsMicOn(!isMicOn)}
-                    />
+                  {true ? (
+                    <MicIcon className={classes.tealVariant} />
                   ) : (
-                    <MicOffIcon
-                      className={classes.redVariant}
-                      onClick={(e) => setIsMicOn(!isMicOn)}
-                    />
+                    <MicOffIcon className={classes.redVariant} />
                   )}
-                  {isVideoOn ? (
-                    <VideocamIcon
-                      className={classes.tealVariant}
-                      onClick={(e) => setIsVideoOn(!isVideoOn)}
-                    />
+                  {true ? (
+                    <VideocamIcon className={classes.tealVariant} />
                   ) : (
-                    <VideocamOffIcon
-                      className={classes.redVariant}
-                      onClick={(e) => setIsVideoOn(!isVideoOn)}
-                    />
+                    <VideocamOffIcon className={classes.redVariant} />
                   )}
                 </div>
               </div>

@@ -16,6 +16,39 @@ export default class Peer {
     this._socket.on("answer", this.handleAnswer.bind(this));
 
     this._socket.on("ice-candidate", this.handleNewICECandidateMsg.bind(this));
+
+    if (this._id === this._socket.id) {
+      document.addEventListener("toggleMute", () => {
+        console.log("muted >>>>>---");
+        if (this._sendingStream) {
+          this._sendingStream.getTracks().forEach((track) => {
+            if (track.kind === "audio") {
+              track.enabled = !track.enabled;
+              this._dispatch({ type: "REFRESH", payload: 1 });
+            }
+          });
+          console.log("sending stream >>>>", this._sendingStream.getTracks());
+          console.log("for >>>", this);
+        }
+      });
+
+      document.addEventListener("toggleVideoStream", () => {
+        console.log("muted video>>>>>---");
+        if (this._sendingStream) {
+          this._sendingStream.getTracks().forEach((track) => {
+            if (track.kind === "video") {
+              track.enabled = !track.enabled;
+              this._dispatch({ type: "REFRESH", payload: 1 });
+            }
+          });
+          console.log(
+            "sending video stream >>>>",
+            this._sendingStream.getTracks()
+          );
+          console.log("for >>>", this);
+        }
+      });
+    }
   }
 
   get id() {

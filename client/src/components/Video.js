@@ -5,13 +5,6 @@ const Video = ({ stream, isMine }) => {
 
   useEffect(() => {
     if (streamRef.current) {
-      if (isMine) {
-        stream.getTracks().forEach((track) => {
-          console.log("kind>>>>", track.kind);
-          if (track.kind === "audio") track.enabled = !track.enabled;
-        });
-      }
-
       streamRef.current.srcObject = stream;
     }
   }, [stream, streamRef, isMine]);
@@ -20,6 +13,7 @@ const Video = ({ stream, isMine }) => {
     <video
       style={{ width: "100%", height: "150px" }}
       ref={streamRef}
+      muted={isMine ? true : false}
       autoPlay
     />
   );
