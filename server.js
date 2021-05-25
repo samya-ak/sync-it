@@ -38,6 +38,7 @@ const io = socket(server);
 io.on("connection", (socket) => {
   socket.on("create room", (roomId) => {
     socket.join(roomId);
+    socket.data.room = roomId;
   });
 
   socket.on("join room", (roomId) => {
@@ -80,6 +81,11 @@ io.on("connection", (socket) => {
 
   socket.on("disconnect", () => {
     socket.to(socket.data.room).emit("disconnected", socket.id);
+  });
+
+  socket.on("videoStatusChange", (payload) => {
+    console.log("video status change >>", payload, socket.data.room);
+    socket.to(socket.data.room).emit("videoStatusChanged", payload);
   });
 });
 

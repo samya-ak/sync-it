@@ -19,7 +19,6 @@ export default class Peer {
 
     if (this._id === this._socket.id) {
       document.addEventListener("toggleMute", () => {
-        console.log("muted >>>>>---");
         if (this._sendingStream) {
           this._sendingStream.getTracks().forEach((track) => {
             if (track.kind === "audio") {
@@ -27,13 +26,10 @@ export default class Peer {
               this._dispatch({ type: "REFRESH", payload: 1 });
             }
           });
-          console.log("sending stream >>>>", this._sendingStream.getTracks());
-          console.log("for >>>", this);
         }
       });
 
       document.addEventListener("toggleVideoStream", () => {
-        console.log("muted video>>>>>---");
         if (this._sendingStream) {
           this._sendingStream.getTracks().forEach((track) => {
             if (track.kind === "video") {
@@ -41,11 +37,6 @@ export default class Peer {
               this._dispatch({ type: "REFRESH", payload: 1 });
             }
           });
-          console.log(
-            "sending video stream >>>>",
-            this._sendingStream.getTracks()
-          );
-          console.log("for >>>", this);
         }
       });
     }
@@ -53,6 +44,10 @@ export default class Peer {
 
   get id() {
     return this._id;
+  }
+
+  get socket() {
+    return this._socket;
   }
 
   get name() {

@@ -14,7 +14,7 @@ const Home = () => {
 
   useEffect(() => {
     navigator.mediaDevices
-      .getUserMedia({ audio: true, video: true })
+      .getUserMedia({ audio: false, video: true })
       .then((stream) => {
         myStream.current = stream;
       });
