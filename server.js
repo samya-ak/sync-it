@@ -84,8 +84,15 @@ io.on("connection", (socket) => {
   });
 
   socket.on("videoStatusChange", (payload) => {
-    console.log("video status change >>", payload, socket.data.room);
-    socket.to(socket.data.room).emit("videoStatusChanged", payload);
+    socket.to(payload.room).emit("videoStatusChanged", payload);
+  });
+
+  socket.on("micStatusChange", (payload) => {
+    socket.to(payload.room).emit("micStatusChanged", payload);
+  });
+
+  socket.on("send-status", (payload) => {
+    io.to(payload.id).emit("receive-status", payload);
   });
 });
 

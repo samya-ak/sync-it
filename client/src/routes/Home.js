@@ -14,7 +14,7 @@ const Home = () => {
 
   useEffect(() => {
     navigator.mediaDevices
-      .getUserMedia({ audio: false, video: true })
+      .getUserMedia({ audio: true, video: true })
       .then((stream) => {
         myStream.current = stream;
       });
@@ -50,6 +50,11 @@ const Home = () => {
         myStream.current
       );
       room.peers = otherPeer;
+
+      //dispatch an event to send your mic and webcam status
+      const sendStatus = new CustomEvent("sendStatus", { detail: socketId });
+      document.dispatchEvent(sendStatus);
+
       dispatch({ type: "ADD_ROOM", payload: room });
     });
   };

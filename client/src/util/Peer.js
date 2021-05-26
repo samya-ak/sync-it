@@ -54,6 +54,10 @@ export default class Peer {
     return this._username;
   }
 
+  get room() {
+    return this._roomId;
+  }
+
   get sendingStream() {
     return this._sendingStream;
   }
