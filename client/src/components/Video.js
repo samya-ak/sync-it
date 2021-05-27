@@ -42,35 +42,53 @@ const Video = ({ stream, isMine, peer }) => {
   const classes = useStyles();
   const [isMicOn, setIsMicOn] = useState(true);
   const [isVideoOn, setIsVideoOn] = useState(true);
+  const isMicOnRef = useRef(isMicOn);
+  const isVideoOnRef = useRef(isVideoOn);
+
+  const _setIsMicOn = (val) => {
+    isMicOnRef.current = val;
+    setIsMicOn(val);
+  };
+
+  const _setIsVideoOn = (val) => {
+    isVideoOnRef.current = val;
+    setIsVideoOn(val);
+  };
 
   const toggleMute = () => {
-    setIsMicOn(!isMicOn);
+    _setIsMicOn(!isMicOn);
     const toggleSound = new Event("toggleMute");
     document.dispatchEvent(toggleSound);
   };
 
   useEffect(() => {
-    console.log("mic status -_--------->", isMicOn);
-    peer.socket.emit("micStatusChange", {
-      id: peer.id,
-      isMicOn,
-      room: peer.room,
-    });
+    if (isMine) {
+      const status = {
+        id: peer.id,
+        isMicOn: isMicOnRef.current,
+        room: peer.room,
+      };
+      peer.socket.emit("micStatusChange", status);
+      console.log("emit mic status ----------->", status);
+    }
   }, [isMicOn]);
 
   const toggleVideoStream = () => {
-    setIsVideoOn(!isVideoOn);
+    _setIsVideoOn(!isVideoOn);
     const toggleVideo = new Event("toggleVideoStream");
     document.dispatchEvent(toggleVideo);
   };
 
   useEffect(() => {
-    console.log("Is video on", isVideoOn);
-    peer.socket.emit("videoStatusChange", {
-      id: peer.id,
-      isVideoOn,
-      room: peer.room,
-    });
+    if (isMine) {
+      const status = {
+        id: peer.id,
+        isVideoOn: isVideoOnRef.current,
+        room: peer.room,
+      };
+      peer.socket.emit("videoStatusChange", status);
+      console.log("emit Is video on", status);
+    }
   }, [isVideoOn]);
 
   useEffect(() => {
@@ -85,7 +103,7 @@ const Video = ({ stream, isMine, peer }) => {
         console.log("on video status changed>>>", payload);
 
         if (payload.id === peer.id) {
-          setIsVideoOn(payload.isVideoOn);
+          _setIsVideoOn(payload.isVideoOn);
         }
       });
 
@@ -93,15 +111,15 @@ const Video = ({ stream, isMine, peer }) => {
         console.log("on mic status changed>>>", payload);
         if (payload.id === peer.id) {
           console.log("here>>>>>", peer);
-          setIsMicOn(payload.isMicOn);
+          _setIsMicOn(payload.isMicOn);
         }
       });
 
       peer.socket.on("receive-status", (payload) => {
         console.log("Receive Status---------------------->", payload, peer);
         if (payload.from === peer.id) {
-          setIsVideoOn(payload.isVideoOn);
-          setIsMicOn(payload.isMicOn);
+          _setIsVideoOn(payload.isVideoOn);
+          _setIsMicOn(payload.isMicOn);
         }
       });
 
@@ -114,22 +132,21 @@ const Video = ({ stream, isMine, peer }) => {
   }, [isMine, peer]);
 
   useEffect(() => {
-    const status = {
-      from: peer.id,
-      isMicOn,
-      isVideoOn,
-    };
-
     if (isMine) {
       document.addEventListener("sendStatus", (e) => {
-        status["id"] = e.detail;
+        const status = {
+          id: e.detail,
+          from: peer.id,
+          isMicOn: isMicOnRef.current,
+          isVideoOn: isVideoOnRef.current,
+        };
 
         console.log("emitting send status-------->", status, peer);
 
         peer.socket.emit("send-status", status);
       });
     }
-  }, [isVideoOn, isMicOn]);
+  }, []);
 
   return (
     <div>
