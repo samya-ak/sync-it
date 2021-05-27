@@ -6,6 +6,7 @@ import Paper from "@material-ui/core/Paper";
 import Chat from "../components/Chat";
 import TextField from "@material-ui/core/TextField";
 import VideoChat from "../components/VideoChat";
+import VideoStream from "../components/VideoStream";
 
 const useStyles = makeStyles((theme) => ({
   paper: {
@@ -56,7 +57,9 @@ const Room = () => {
       </Grid>
 
       <Grid item md={6} sm={6}>
-        <Paper className={classes.paper}>video player here</Paper>
+        <Paper className={classes.paper}>
+          <VideoStream self={self} />
+        </Paper>
       </Grid>
 
       <Grid
