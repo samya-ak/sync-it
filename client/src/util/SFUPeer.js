@@ -22,6 +22,7 @@ class SFUPeer {
 
     if (!this._isBroadcaster) {
       this._sfuPeer.addTransceiver("video", { direction: "recvonly" });
+      this._sfuPeer.addTransceiver("audio", { direction: "recvonly" });
       this._sfuPeer.ontrack = (e) => this.handleTrackEvent(e);
     } else {
       console.log(
@@ -114,13 +115,16 @@ class SFUPeer {
     const media = e.streams[0];
     console.log("Received video stream >>>>>>>>", media.getTracks());
     console.log("Media is active?>>>", media.active);
-    const container = document.getElementById("video-stream-container");
-    let videoElement = document.createElement("video");
-    videoElement.controls = true;
-    videoElement.autoplay = false;
-    videoElement.style.width = "inherit";
-    videoElement.srcObject = e.streams[0];
-    container.append(videoElement);
+    if (!document.getElementById("video-consumer")) {
+      const container = document.getElementById("video-stream-container");
+      let videoElement = document.createElement("video");
+      videoElement.id = "video-consumer";
+      videoElement.controls = true;
+      videoElement.autoplay = false;
+      videoElement.style.width = "inherit";
+      videoElement.srcObject = e.streams[0];
+      container.append(videoElement);
+    }
   }
 }
 
