@@ -113,7 +113,7 @@ io.on("connection", (socket) => {
   app.use(express.json());
   app.use(express.urlencoded({ extended: true }));
 
-  const broadcasts = new Map();
+  const broadcastingRooms = new Map();
 
   const ice = {
     iceServers: [
@@ -128,8 +128,52 @@ io.on("connection", (socket) => {
     ],
   };
 
+  app.post("/ice", async ({ body }, res) => {
+    try {
+      console.log("inside ice candidate>>>>");
+      if (broadcastingRooms.has(body.room)) {
+        const room = broadcastingRooms.get(body.room);
+        const peer = room.get(body.id);
+        const candidate = new webrtc.RTCIceCandidate(body.candidate);
+
+        peer.addIceCandidate(candidate).catch((e) => console.log(e));
+
+        res.json({ candidate });
+      } else {
+        res.status(400).send(`No room ${body.room} in broadcasting room.`);
+      }
+    } catch (e) {
+      console.log(e);
+      res.status(500).send(e);
+    }
+  });
+
+  /*
+  {
+    "room_id": {
+      'stream': 'something',
+      'peer1': 'rtc peer object',
+      'peer2': 'rtc peer object',
+    }
+  }
+  */
+
   app.post("/broadcast", async ({ body }, res) => {
     const peer = new webrtc.RTCPeerConnection(ice);
+
+    if (!broadcastingRooms.has(body.room)) {
+      const room = new Map();
+      room.set(body.id, peer);
+      broadcastingRooms.set(body.room, room);
+      console.log(
+        "room created>>>",
+        broadcastingRooms,
+        broadcastingRooms.get(body.room)
+      );
+    }
+    //TODO: need to handle condition where there is already a broadcasting room but another peer wants to
+    //broadcast
+
     peer.ontrack = (e) => handleTrackEvent(e, body.room);
     const desc = new webrtc.RTCSessionDescription(body.sdp);
     await peer.setRemoteDescription(desc);
@@ -144,19 +188,28 @@ io.on("connection", (socket) => {
 
   function handleTrackEvent(e, room) {
     console.log("Broadcasting to room------->", room);
-    broadcasts.set(room, e.streams[0]);
+    if (broadcastingRooms.has(room)) {
+      broadcastingRooms.get(room).set("stream", e.streams[0]);
+    } else {
+      console.error("no broadcasting room: " + room);
+    }
   }
 
+  //TODO: need to handle part when a broadcaster is streaming and in the middle, a consumer joins the room
   app.post("/consume", async ({ body }, res) => {
     try {
+      console.log("consuming", body);
       const peer = new webrtc.RTCPeerConnection(ice);
       const desc = new webrtc.RTCSessionDescription(body.sdp);
       await peer.setRemoteDescription(desc);
-      if (broadcasts.has(body.room)) {
-        broadcasts
-          .get(body.room)
+      if (broadcastingRooms.has(body.room)) {
+        const room = broadcastingRooms.get(body.room);
+        console.log("This is the room>>>", room);
+        room
+          .get("stream")
           .getTracks()
-          .forEach((track) => peer.addTrack(track, broadcasts.get(body.room)));
+          .forEach((track) => peer.addTrack(track, room.get("stream")));
+        room.set(body.id, peer);
       } else {
         throw new Error("No broadcasts for your room");
       }
@@ -172,6 +225,9 @@ io.on("connection", (socket) => {
     }
   });
 }
+
+//TODO: delete peer from broadcasting room when that user leaves the room,
+//TODO: delete the broadcasting room when there are no peers inside it
 
 io.of("/").adapter.on("create-room", (roomId) => {
   console.log(`Room created: ${roomId}`);

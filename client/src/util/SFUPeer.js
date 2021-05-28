@@ -16,11 +16,13 @@ class SFUPeer {
       ],
     });
 
+    this._sfuPeer.onicecandidate = (e) => this.handleICECandidateEvent(e);
     this._sfuPeer.onnegotiationneeded = () =>
       this.handleNegotiationNeededEvent();
+
     if (!this._isBroadcaster) {
-      this._sfuPeer.ontrack = (e) => this.handleTrackEvent(e);
       this._sfuPeer.addTransceiver("video", { direction: "recvonly" });
+      this._sfuPeer.ontrack = (e) => this.handleTrackEvent(e);
     } else {
       console.log(
         "adding stream to broadcaster.------->",
@@ -45,15 +47,16 @@ class SFUPeer {
     const offer = await this._sfuPeer.createOffer();
     await this._sfuPeer.setLocalDescription(offer);
     const payload = {
+      id: this._self.id,
+      room: this._self.room,
       sdp: this._sfuPeer.localDescription,
       username: this._self.name,
-      room: this._self.room,
     };
 
     let response;
     try {
       if (this._isBroadcaster) {
-        console.log("broadcasting>>>>", this);
+        console.log("broadcasting>>>>", payload);
         response = await fetch("/broadcast", {
           method: "POST",
           headers: {
@@ -64,7 +67,7 @@ class SFUPeer {
           return response.json();
         });
       } else {
-        console.log("consuming>>>>", this);
+        console.log("consuming>>>>", payload);
         response = await fetch("/consume", {
           method: "POST",
           headers: {
@@ -86,12 +89,35 @@ class SFUPeer {
     }
   };
 
+  handleICECandidateEvent = async (e) => {
+    if (e.candidate) {
+      const payload = {
+        id: this._self.id,
+        room: this._self.room,
+        candidate: e.candidate,
+        username: this._self.name,
+      };
+      let response = await fetch("/ice", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(payload),
+      }).then((response) => {
+        return response.json();
+      });
+      console.log("ice candidate emitting for video streaming...", e, response);
+    }
+  };
+
   handleTrackEvent(e) {
-    console.log("Received video stream >>>>>>>>", e.streams[0]);
+    const media = e.streams[0];
+    console.log("Received video stream >>>>>>>>", media.getTracks());
+    console.log("Media is active?>>>", media.active);
     const container = document.getElementById("video-stream-container");
     let videoElement = document.createElement("video");
-    videoElement.controls = false;
-    videoElement.autoplay = true;
+    videoElement.controls = true;
+    videoElement.autoplay = false;
     videoElement.style.width = "inherit";
     videoElement.srcObject = e.streams[0];
     container.append(videoElement);
