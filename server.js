@@ -174,6 +174,7 @@ io.on("connection", (socket) => {
     //TODO: need to handle condition where there is already a broadcasting room but another peer wants to
     //broadcast
 
+    peer.onicecandidate = (e) => handleIceCandidate(e, body.id);
     peer.ontrack = (e) => handleTrackEvent(e, body.room);
     const desc = new webrtc.RTCSessionDescription(body.sdp);
     await peer.setRemoteDescription(desc);
@@ -186,6 +187,14 @@ io.on("connection", (socket) => {
     res.json(payload);
   });
 
+  async function handleIceCandidate(e, socketId) {
+    const sockets = await io.in(socketId).fetchSockets();
+    const candidate = e.candidate;
+    if (e.candidate) {
+      sockets[0].emit("sfu-ice-candidate", { candidate });
+    }
+  }
+
   function handleTrackEvent(e, room) {
     console.log("Broadcasting to room------->", room);
     if (broadcastingRooms.has(room)) {
@@ -193,6 +202,7 @@ io.on("connection", (socket) => {
     } else {
       console.error("no broadcasting room: " + room);
     }
+    console.log("room after adding stream >>>>", broadcastingRooms.get(room));
   }
 
   //TODO: need to handle part when a broadcaster is streaming and in the middle, a consumer joins the room
@@ -200,8 +210,12 @@ io.on("connection", (socket) => {
     try {
       console.log("consuming", body);
       const peer = new webrtc.RTCPeerConnection(ice);
+      peer.onicecandidate = (e) => handleIceCandidate(e, body.id);
+
       const desc = new webrtc.RTCSessionDescription(body.sdp);
+
       await peer.setRemoteDescription(desc);
+
       if (broadcastingRooms.has(body.room)) {
         const room = broadcastingRooms.get(body.room);
         console.log("This is the room>>>", room);
@@ -213,8 +227,10 @@ io.on("connection", (socket) => {
       } else {
         throw new Error("No broadcasts for your room");
       }
+
       const answer = await peer.createAnswer();
       await peer.setLocalDescription(answer);
+
       const payload = {
         sdp: peer.localDescription,
       };

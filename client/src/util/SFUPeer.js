@@ -16,6 +16,7 @@ class SFUPeer {
       ],
     });
 
+    self.socket.on("sfu-ice-candidate", this.handleSfuIceCandidate.bind(this));
     this._sfuPeer.onicecandidate = (e) => this.handleICECandidateEvent(e);
     this._sfuPeer.onnegotiationneeded = () =>
       this.handleNegotiationNeededEvent();
@@ -42,6 +43,12 @@ class SFUPeer {
     //   .getTracks()
     //   .forEach((track) => this._sfuPeer.addTrack(track, this._stream));
   }
+
+  handleSfuIceCandidate = (incoming) => {
+    const candidate = new RTCIceCandidate(incoming.candidate);
+    this._sfuPeer.addIceCandidate(candidate).catch((e) => console.log(e));
+    console.log("Sfu ice candidate added>>>>>");
+  };
 
   handleNegotiationNeededEvent = async () => {
     console.log("inside handleNegotiationNeededEvent");

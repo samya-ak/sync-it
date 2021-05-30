@@ -11,7 +11,7 @@ export default class Peer {
     this._sendingStream = sendingStream;
     this._receivingStream = null;
 
-    this._socket.on("offer", this.handleRecieveCall.bind(this));
+    this._socket.on("offer", this.handleReceiveCall.bind(this));
 
     this._socket.on("answer", this.handleAnswer.bind(this));
 
@@ -151,7 +151,7 @@ export default class Peer {
       .catch((e) => console.log(e));
   }
 
-  handleRecieveCall(incoming) {
+  handleReceiveCall(incoming) {
     if (incoming.caller === this._id) {
       console.log("handle receive call fired>>>", incoming);
       console.log("handle receive call fired for>>>", this);
