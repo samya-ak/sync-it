@@ -2,12 +2,11 @@ import React, { useState, useEffect } from "react";
 import { useSpring, animated, to } from "@react-spring/web";
 import { useDrag } from "react-use-gesture";
 import styled from "styled-components";
-// import window from "global";
 
 const Container = styled.div`
-  width: 100vw;
-  height: 100vh;
-  position: absolute;
+  width: 100%;
+  height: 100%;
+  position: relative;
   box-shadow: 0px 0px 25px -8px rgba(53, 53, 53, 0.82);
   overflow: hidden;
   @media only screen and (max-width: 500px) {
@@ -54,14 +53,7 @@ const StyledButton = styled(animated.button)`
   outline: none;
 `;
 
-const height = window.innerHeight;
-const width = window.innerWidth;
-let w = width;
-if (width <= 500) {
-  w = width;
-}
-
-const getPath = (y, x, width) => {
+const getPath = (y, x, width, height) => {
   const anchorDistance = 200 + x * 0.5;
   const curviness = anchorDistance - 60;
   return `M0, 
@@ -90,29 +82,49 @@ const getPath = (y, x, width) => {
 const Page = ({ children, theme, index, setActive, gone = false }) => {
   const [isGone, setGone] = useState(gone);
   const [isMove, setMove] = useState(false);
-  // const { contentL1, contentL2, contentL3, src } = data;
-  const [{ posX, posY }, setPos] = useSpring(() => ({
-    posX: -50,
-    posY: height * 0.72 - 20,
-    config: {
-      mass: 3,
-    },
-  }));
-  const [{ d }, setDvalue] = useSpring(() => ({
-    d: gone ? getPath(0, 0, w) : getPath(height * 0.72, 0, 0),
-    config: {
-      mass: 3,
-    },
-    onRest: () => {
-      if (isGone) {
-        setDvalue(getPath(0, 0, w));
-      }
-    },
-  }));
+  const [width, setWidth] = useState(0);
+  const [height, setHeight] = useState(0);
+
+  useEffect(() => {
+    const parent = document.getElementById("liquid-swipe-container");
+    if (parent) {
+      setWidth(parent.offsetWidth);
+      setHeight(parent.offsetHeight);
+    }
+  }, []);
+
+  const [{ posX, posY }, setPos] = useSpring(
+    () => ({
+      posX: -50,
+      posY: height * 0.72 - 20,
+      config: {
+        mass: 3,
+      },
+    }),
+    [height]
+  );
+
+  const [{ d }, setDvalue] = useSpring(
+    () => ({
+      d: gone
+        ? getPath(0, 0, width, height)
+        : getPath(height * 0.72, 0, 0, height),
+      config: {
+        mass: 3,
+      },
+      onRest: () => {
+        if (isGone) {
+          setDvalue(getPath(0, 0, width, height));
+        }
+      },
+    }),
+    [width, height]
+  );
+
   useEffect(() => {
     if (!gone) {
       setDvalue({
-        d: getPath(height * 0.72, 48, 5),
+        d: getPath(height * 0.72, 48, 5, height),
       });
       setTimeout(() => {
         setPos({
@@ -120,14 +132,14 @@ const Page = ({ children, theme, index, setActive, gone = false }) => {
         });
       }, 100);
     }
-  }, [gone]);
+  }, [gone, height]);
 
   const bind = useDrag(
     ({ down, movement: [mx], xy: [, my], vxvy: [vx] }) => {
       if (!isGone) {
         if (down && isMove) {
           setDvalue({
-            d: getPath(my, mx + 60, 10),
+            d: getPath(my, mx + 60, 10, height),
           });
           setPos({
             posX: mx + 20,
@@ -135,19 +147,19 @@ const Page = ({ children, theme, index, setActive, gone = false }) => {
           });
           if (mx > width / 2 || vx > 3) {
             setDvalue({
-              d: getPath(my, -50, w),
+              d: getPath(my, -50, width, height),
             });
             setGone(true);
             setTimeout(() => {
               setDvalue({
-                d: getPath(my, 0, w),
+                d: getPath(my, 0, width, height),
               });
               setActive(index);
             }, 240);
           }
         } else {
           setDvalue({
-            d: getPath(height * 0.72, 48, 5),
+            d: getPath(height * 0.72, 48, 5, height),
           });
           setPos({
             posX: 7,
@@ -263,7 +275,7 @@ export const LiquidSwipe = ({ components, colors }) => {
   }, [isActive]);
   return (
     <>
-      <Container>{elm}</Container>
+      <Container id="liquid-swipe-container">{elm}</Container>
     </>
   );
 };
