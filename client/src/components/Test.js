@@ -1,5 +1,6 @@
 import { LiquidSwipe } from "./LiquidSwipe";
 import TestComp from "./TestComp";
+
 const Test = () => {
   const components = [
     <TestComp heading={"Some heading"} color={"#ddaaff"} />,

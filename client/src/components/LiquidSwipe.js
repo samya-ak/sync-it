@@ -7,8 +7,6 @@ const Container = styled.div`
   width: 100%;
   height: 100%;
   position: relative;
-  box-shadow: 0px 0px 25px -8px rgba(53, 53, 53, 0.82);
-  overflow: hidden;
   @media only screen and (max-width: 500px) {
     width: 100%;
   }
@@ -19,8 +17,6 @@ const PageDiv = styled.div`
   height: 100%;
   position: absolute;
   text-align: center;
-  font-size: 37px;
-  font-weight: bold;
   flex-direction: column;
   display: flex;
   justify-content: space-between;
@@ -90,6 +86,11 @@ const Page = ({ children, theme, index, setActive, gone = false }) => {
     if (parent) {
       setWidth(parent.offsetWidth);
       setHeight(parent.offsetHeight);
+      console.log(
+        "setting width and height of" + parent + ": >>>",
+        parent.offsetWidth,
+        parent.offsetHeight
+      );
     }
   }, []);
 

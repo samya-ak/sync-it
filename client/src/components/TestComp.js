@@ -7,6 +7,7 @@ const useStyles = makeStyles(() => ({
     flexDirection: "column",
     height: "100%",
     backgroundColor: color,
+    borderRadius: "0 40px 145px 0",
   }),
   img: {
     width: "100%",
@@ -15,16 +16,17 @@ const useStyles = makeStyles(() => ({
     display: "flex",
     justifyContent: "center",
     alignItems: "center",
+    height: "30%",
   },
   imgContainer: {
     display: "flex",
     justifyContent: "center",
     alignItems: "center",
+    height: "70%",
   },
 }));
 
 const TestComp = ({ heading, color }) => {
-  console.log("Color: ", color);
   const classes = useStyles({ color });
 
   return (
