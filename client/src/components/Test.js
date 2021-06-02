@@ -1,13 +1,14 @@
 import { LiquidSwipe } from "./LiquidSwipe";
-import TestComp from "./TestComp";
+import Slide from "./Slide";
+import { liquidSwiperData as data } from "../config";
 
 const Test = () => {
-  const components = [
-    <TestComp heading={"Some heading"} color={"#ddaaff"} />,
-    <TestComp heading={"Some heading2"} color={"#ddbbff"} />,
-    <TestComp heading={"Some heading3"} color={"#ddccff"} />,
-  ];
+  const components = [];
   const colors = ["#fff", "#fff", "#fff"];
+
+  data.forEach((datum) => {
+    components.push(<Slide data={datum} />);
+  });
   return <LiquidSwipe components={components} colors={colors} />;
 };
 

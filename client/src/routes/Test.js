@@ -6,22 +6,32 @@ import {
   Box,
   Button,
   FormControl,
-  InputLabel,
   OutlinedInput,
   InputAdornment,
 } from "@material-ui/core";
 import MeetingRoomIcon from "@material-ui/icons/MeetingRoom";
 import KeyboardIcon from "@material-ui/icons/Keyboard";
 
-// import TestComp from "../components/TestComp";
-
-const useStyles = makeStyles(() => ({
+const useStyles = makeStyles((theme) => ({
   container: {
     display: "flex",
     height: "100vh",
   },
   half: {
     width: "50%",
+  },
+  boxHeight: {
+    [theme.breakpoints.down("sm")]: {
+      height: "350px",
+    },
+    [theme.breakpoints.up("sm")]: {
+      height: "500px",
+    },
+  },
+  marginBottom: {
+    [theme.breakpoints.down("sm")]: {
+      marginBottom: "0.8rem",
+    },
   },
 }));
 
@@ -52,15 +62,19 @@ const TestPage = () => {
       </div> */}
       <Grid container>
         <Grid item xs={12}>
-          <Box px={4} py={2}>
+          <Box px={{ xs: 2, sm: 4, md: 4 }} py={{ xs: 1, sm: 2, md: 2 }}>
             <Typography variant="h5">
               Sync<span style={{ color: "#00d48b" }}>It</span>
             </Typography>
           </Box>
         </Grid>
         <Grid item xs={12} sm={12} md={6}>
-          <Box pl={7.5} pr={9} py={12}>
-            <Box pr>
+          <Box
+            pl={{ xs: 3, sm: 7.5, md: 7.5 }}
+            pr={{ xs: 6, sm: 9, md: 9 }}
+            py={{ xs: 4, sm: 12, md: 12 }}
+          >
+            <Box>
               <Typography
                 variant="h3"
                 style={{ fontSize: "2.6rem", marginBottom: "2rem" }}
@@ -68,12 +82,15 @@ const TestPage = () => {
                 Premium video meetings.
                 <br /> For upto four people.
               </Typography>
-              <Typography variant="subtitle1">
+              <Typography
+                variant="subtitle1"
+                style={{ fontWeight: 500, color: "#666161" }}
+              >
                 Re-engineered the service for secure friendly meetings, SyncIt,
                 to make free and available for all.
               </Typography>
             </Box>
-            <Box py={6}>
+            <Box py={{ xs: 3, sm: 7, md: 7 }}>
               <Button
                 style={{
                   padding: "0.9rem 1rem",
@@ -84,6 +101,7 @@ const TestPage = () => {
                 variant="contained"
                 color="primary"
                 startIcon={<MeetingRoomIcon />}
+                className={classes.marginBottom}
               >
                 Create Room
               </Button>
@@ -103,14 +121,20 @@ const TestPage = () => {
           </Box>
         </Grid>
         <Grid item xs={12} sm={12} md={6}>
-          <Box px={7.5} py={4} height="500px" style={{ borderRadius: "20px" }}>
+          <Box
+            px={{ xs: 3, sm: 7.5, md: 7.5 }}
+            py={{ xs: 2, sm: 4, md: 4 }}
+            className={classes.boxHeight}
+            style={{ borderRadius: "20px" }}
+          >
             <Test />
           </Box>
         </Grid>
         <Grid item xs={12}>
-          <Box my={7}>
+          <Box my={5}>
             <Typography variant="subtitle1" align="center">
-              Sync<span style={{ color: "#00d48b" }}>It</span> Copyright 2021
+              Sync<span style={{ color: "#00d48b" }}>It</span>
+              &nbsp; &copy;&nbsp;Copyright {new Date().getUTCFullYear()}
             </Typography>
           </Box>
         </Grid>

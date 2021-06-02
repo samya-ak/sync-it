@@ -40,7 +40,8 @@ const StyledButton = styled(animated.button)`
   font-family: "Oswald", sans-serif;
   background: transparent;
   color: ${(props) => props.color};
-  border: 1px solid ${(props) => props.color};
+  border: 2px solid ${(props) => props.color};
+  font-weight: bold;
   cursor: pointer;
   touch-action: pan-y;
   &::focus {

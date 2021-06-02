@@ -1,12 +1,11 @@
 import { makeStyles } from "@material-ui/core/styles";
-import pic from "../images/1.png";
 
 const useStyles = makeStyles(() => ({
-  container: ({ color }) => ({
+  container: ({ backgroundColor }) => ({
     display: "flex",
     flexDirection: "column",
     height: "100%",
-    backgroundColor: color,
+    backgroundColor: backgroundColor,
     borderRadius: "0 40px 145px 0",
   }),
   img: {
@@ -26,23 +25,31 @@ const useStyles = makeStyles(() => ({
   },
 }));
 
-const TestComp = ({ heading, color }) => {
-  const classes = useStyles({ color });
+const Slide = ({ data }) => {
+  const { title, backgroundColor, description, image } = data;
+  const classes = useStyles({ backgroundColor });
 
   return (
     <div className={classes.container}>
       <div className={classes.imgContainer}>
-        <img className={classes.img} src={pic} alt="Pic" />
+        <img className={classes.img} src={image} alt="Pic" />
       </div>
       <div className={classes.text}>
         <div>
-          <h1>{heading}</h1>
-          <p>This is the paragraph.</p>
-          <p>Another paragraph</p>
+          <p
+            style={{
+              color: "#fff",
+              fontSize: "1.3rem",
+              textDecoration: "underline",
+            }}
+          >
+            {title}
+          </p>
+          <p>{description}</p>
         </div>
       </div>
     </div>
   );
 };
 
-export default TestComp;
+export default Slide;
