@@ -47,7 +47,7 @@ const useStyles = makeStyles((theme) => ({
     color: "#0F9D58",
     textTransform: "capitalize",
     marginLeft: "1rem",
-    padding: "0.9rem 1rem",
+    padding: "0.7rem 1rem",
     fontSize: "1rem",
   },
 }));

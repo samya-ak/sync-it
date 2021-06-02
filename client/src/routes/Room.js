@@ -7,6 +7,8 @@ import Chat from "../components/Chat";
 import TextField from "@material-ui/core/TextField";
 import VideoChat from "../components/VideoChat";
 import VideoStream from "../components/VideoStream";
+import useMediaQuery from "@material-ui/core/useMediaQuery";
+import { useTheme } from "@material-ui/core/styles";
 
 const useStyles = makeStyles((theme) => ({
   paper: {
@@ -28,6 +30,8 @@ const Room = () => {
   const [peers, setPeers] = useState([]);
 
   const classes = useStyles();
+  const theme = useTheme();
+  const matches = useMediaQuery(theme.breakpoints.up("md"));
 
   useEffect(() => {
     if (state.self) {
@@ -50,48 +54,52 @@ const Room = () => {
     }
   };
 
-  return (
-    <Grid container style={{ height: "100vh" }} spacing={1}>
-      <Grid item md={3} sm={3}>
-        <VideoChat self={self} state={state} peers={peers} />
-      </Grid>
+  if (matches) {
+    return (
+      <Grid container style={{ height: "100vh" }} spacing={1}>
+        <Grid item md={3} sm={3}>
+          <VideoChat self={self} state={state} peers={peers} />
+        </Grid>
 
-      <Grid item md={6} sm={6}>
-        <Paper className={classes.paper}>
-          <VideoStream self={self} />
-        </Paper>
-      </Grid>
-
-      <Grid
-        item
-        container
-        md={3}
-        sm={3}
-        direction={"column"}
-        justify="space-between"
-      >
-        <Grid item style={{ height: "10vh" }}>
-          {console.log("self in paper>>>", self)}
-          <Paper className={`${classes.paper} ${classes.yourName}`}>
-            <TextField
-              id="user-name"
-              label="Your Name"
-              variant="outlined"
-              size="small"
-              defaultValue={username}
-              style={{ backgroundColor: "#fff" }}
-              onChange={(e) => setUsername(e.target.value)}
-              onKeyPress={sendUsername}
-            />
+        <Grid item md={6} sm={6}>
+          <Paper className={classes.paper}>
+            <VideoStream self={self} />
           </Paper>
         </Grid>
 
-        <Grid item style={{ height: "88vh" }}>
-          <Chat self={self} />
+        <Grid
+          item
+          container
+          md={3}
+          sm={3}
+          direction={"column"}
+          justify="space-between"
+        >
+          <Grid item style={{ height: "10vh" }}>
+            {console.log("self in paper>>>", self)}
+            <Paper className={`${classes.paper} ${classes.yourName}`}>
+              <TextField
+                id="user-name"
+                label="Your Name"
+                variant="outlined"
+                size="small"
+                defaultValue={username}
+                style={{ backgroundColor: "#fff" }}
+                onChange={(e) => setUsername(e.target.value)}
+                onKeyPress={sendUsername}
+              />
+            </Paper>
+          </Grid>
+
+          <Grid item style={{ height: "88vh" }}>
+            <Chat self={self} />
+          </Grid>
         </Grid>
       </Grid>
-    </Grid>
-  );
+    );
+  } else {
+    return <div>Small Screen</div>;
+  }
 };
 
 export default Room;

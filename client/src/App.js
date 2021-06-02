@@ -7,32 +7,52 @@ import "./App.css";
 import { Context } from "./components/Store";
 import Error from "./components/Error";
 import { useContext } from "react";
+import { createMuiTheme, ThemeProvider } from "@material-ui/core/styles";
+
+const theme = createMuiTheme({
+  palette: {
+    primary: {
+      light: "#33ab9f",
+      main: "#009688",
+      dark: "#00695f",
+      contrastText: "#fff",
+    },
+    secondary: {
+      light: "#baf3e5",
+      main: "#a9f1df",
+      dark: "#76a89c",
+      contrastText: "#000",
+    },
+  },
+});
 
 function App() {
   const [state] = useContext(Context);
   console.log("app", state);
   return (
-    <Router>
-      <div className="">
-        <Switch>
-          <Route exact path="/">
-            <div>
-              <Home />
-            </div>
-          </Route>
-          <Route exact path="/test">
-            <Test />
-          </Route>
-          <Route exact path="/rooms/:id">
-            <Room />
-          </Route>
-          <Route exact path="*">
-            <NotFound />
-          </Route>
-        </Switch>
-        {state.error && <Error />}
-      </div>
-    </Router>
+    <ThemeProvider theme={theme}>
+      <Router>
+        <div className="">
+          <Switch>
+            <Route exact path="/">
+              <div>
+                <Home />
+              </div>
+            </Route>
+            <Route exact path="/test">
+              <Test />
+            </Route>
+            <Route exact path="/rooms/:id">
+              <Room />
+            </Route>
+            <Route exact path="*">
+              <NotFound />
+            </Route>
+          </Switch>
+          {state.error && <Error />}
+        </div>
+      </Router>
+    </ThemeProvider>
   );
 }
 
