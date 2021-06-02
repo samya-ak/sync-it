@@ -16,7 +16,7 @@ function App() {
       <div className="">
         <Switch>
           <Route exact path="/">
-            <div className="center">
+            <div>
               <Home />
             </div>
           </Route>

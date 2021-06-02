@@ -15,13 +15,13 @@ const useStyles = makeStyles(() => ({
     display: "flex",
     justifyContent: "center",
     alignItems: "center",
-    height: "30%",
+    height: "25%",
   },
   imgContainer: {
     display: "flex",
     justifyContent: "center",
     alignItems: "center",
-    height: "70%",
+    height: "75%",
   },
 }));
 

@@ -2,7 +2,7 @@ import { LiquidSwipe } from "./LiquidSwipe";
 import Slide from "./Slide";
 import { liquidSwiperData as data } from "../config";
 
-const Test = () => {
+const LiquidSwipeSlider = () => {
   const components = [];
   const colors = ["#fff", "#fff", "#fff"];
 
@@ -12,4 +12,4 @@ const Test = () => {
   return <LiquidSwipe components={components} colors={colors} />;
 };
 
-export default Test;
+export default LiquidSwipeSlider;
