@@ -14,6 +14,8 @@ import VideoCallIcon from "@material-ui/icons/VideoCall";
 import LinkIcon from "@material-ui/icons/Link";
 import CallEndIcon from "@material-ui/icons/CallEnd";
 import Chat from "../components/Chat";
+import VideoChat from "../components/VideoChat";
+import VideoStream from "../components/VideoStream";
 
 const drawerHeight = "30vh";
 
@@ -64,7 +66,7 @@ const useStyles = makeStyles((theme) => ({
       duration: theme.transitions.duration.leavingScreen,
     }),
     marginTop: `-${drawerHeight}`,
-    "& #chat-box": {
+    "& .content-box": {
       height: "90vh",
       transition: theme.transitions.create("height", {
         easing: theme.transitions.easing.sharp,
@@ -78,7 +80,7 @@ const useStyles = makeStyles((theme) => ({
       duration: theme.transitions.duration.enteringScreen,
     }),
     marginTop: 0,
-    "& #chat-box": {
+    "& .content-box": {
       height: "60vh",
       transition: theme.transitions.create("height", {
         easing: theme.transitions.easing.sharp,
@@ -121,7 +123,7 @@ const actions = [
   },
 ];
 
-const MobileRoom = ({ self }) => {
+const MobileRoom = ({ self, state, peers }) => {
   const classes = useStyles();
   const [openDrawer, setOpenDrawer] = useState(false);
   const [openSpeedDial, setOpenSpeedDial] = useState(false);
@@ -197,19 +199,23 @@ const MobileRoom = ({ self }) => {
         classes={{
           paper: classes.drawerPaper,
         }}
-      ></Drawer>
+      >
+        <VideoStream self={self} />
+      </Drawer>
       <main
         className={clsx(classes.content, {
           [classes.contentShift]: openDrawer,
         })}
       >
         <TabPanel value={value} index={0}>
-          <div id="chat-box">
+          <div className="content-box">
             <Chat self={self} />
           </div>
         </TabPanel>
         <TabPanel value={value} index={1}>
-          Item Two
+          <div className="content-box">
+            <VideoChat self={self} state={state} peers={peers} />
+          </div>
         </TabPanel>
       </main>
     </div>

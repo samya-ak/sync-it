@@ -130,12 +130,13 @@ io.on("connection", (socket) => {
 
   app.post("/ice", async ({ body }, res) => {
     try {
-      console.log("inside ice candidate>>>>");
+      console.log("inside ice candidate>>>>", body);
       if (broadcastingRooms.has(body.room)) {
         const room = broadcastingRooms.get(body.room);
+        console.log("Room>>>", room);
         const peer = room.get(body.id);
         const candidate = new webrtc.RTCIceCandidate(body.candidate);
-
+        console.log("Peer>>", peer);
         peer.addIceCandidate(candidate).catch((e) => console.log(e));
 
         res.json({ candidate });
@@ -161,6 +162,7 @@ io.on("connection", (socket) => {
   app.post("/broadcast", async ({ body }, res) => {
     const peer = new webrtc.RTCPeerConnection(ice);
 
+    console.log("Broadcasting to room: ", body);
     if (!broadcastingRooms.has(body.room)) {
       const room = new Map();
       room.set(body.id, peer);

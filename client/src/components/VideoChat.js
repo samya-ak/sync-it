@@ -7,6 +7,9 @@ const useStyles = makeStyles((theme) => ({
     height: "100%",
     width: "100%",
     backgroundColor: "#EAECEE ",
+    [theme.breakpoints.down("md")]: {
+      overflow: "auto",
+    },
   },
 
   selfStream: {
@@ -15,6 +18,9 @@ const useStyles = makeStyles((theme) => ({
     flexDirection: "column",
     alignItems: "center",
     height: "25%",
+    [theme.breakpoints.down("md")]: {
+      height: "auto",
+    },
   },
 
   otherStream: {
@@ -23,6 +29,9 @@ const useStyles = makeStyles((theme) => ({
     flexDirection: "column",
     alignItems: "center",
     height: "25%",
+    [theme.breakpoints.down("md")]: {
+      height: "auto",
+    },
   },
 
   tealVariant: {

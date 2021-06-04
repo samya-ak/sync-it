@@ -10,6 +10,10 @@ import VideoStream from "../components/VideoStream";
 import MobileRoom from "../components/MobileRoom";
 import useMediaQuery from "@material-ui/core/useMediaQuery";
 import { useTheme } from "@material-ui/core/styles";
+import { AppBar, Toolbar, Typography } from "@material-ui/core";
+import LinkIcon from "@material-ui/icons/Link";
+import CallEndIcon from "@material-ui/icons/CallEnd";
+import IconButton from "@material-ui/core/IconButton";
 
 const useStyles = makeStyles((theme) => ({
   paper: {
@@ -21,6 +25,18 @@ const useStyles = makeStyles((theme) => ({
     display: "flex",
     justifyContent: "center",
     alignItems: "center",
+  },
+  utilButtons: {
+    backgroundColor: "#fff",
+    color: theme.palette.primary.main,
+    marginRight: theme.spacing(2),
+    "&:hover": {
+      color: "#CD2B2B",
+      backgroundColor: theme.palette.secondary.light,
+    },
+  },
+  title: {
+    flexGrow: 1,
   },
 }));
 
@@ -64,6 +80,21 @@ const Room = () => {
 
         <Grid item md={6} sm={6}>
           <Paper className={classes.paper}>
+            <AppBar position="static" color="primary">
+              <Toolbar>
+                <Typography variant="h6" className={classes.title}>
+                  SyncIt
+                </Typography>
+
+                <IconButton className={classes.utilButtons}>
+                  <LinkIcon />
+                </IconButton>
+
+                <IconButton className={classes.utilButtons}>
+                  <CallEndIcon />
+                </IconButton>
+              </Toolbar>
+            </AppBar>
             <VideoStream self={self} />
           </Paper>
         </Grid>
@@ -99,7 +130,7 @@ const Room = () => {
       </Grid>
     );
   } else {
-    return <MobileRoom self={self} />;
+    return <MobileRoom self={self} state={state} peers={peers} />;
   }
 };
 

@@ -74,6 +74,7 @@ class SFUPeer {
         }).then((response) => {
           return response.json();
         });
+        this._self.socket.emit("broadcasting", { room: this._self.room });
       } else {
         console.log("consuming>>>>", payload);
         response = await fetch("/consume", {
@@ -93,7 +94,7 @@ class SFUPeer {
       const desc = new RTCSessionDescription(response.sdp);
       this._sfuPeer.setRemoteDescription(desc).catch((e) => console.log(e));
     } catch (e) {
-      console.error(e);
+      console.error("Error in consuming stream: ", e);
     }
   };
 
@@ -124,12 +125,15 @@ class SFUPeer {
     console.log("Media is active?>>>", media.active);
     if (!document.getElementById("video-consumer")) {
       const container = document.getElementById("video-stream-container");
+      const selector = document.getElementById("video-selector");
       let videoElement = document.createElement("video");
       videoElement.id = "video-consumer";
       videoElement.controls = true;
       videoElement.autoplay = false;
-      videoElement.style.width = "inherit";
+      videoElement.style.width = "100%";
+      videoElement.style.maxHeight = "403px";
       videoElement.srcObject = e.streams[0];
+      selector.remove();
       container.append(videoElement);
     }
   }
