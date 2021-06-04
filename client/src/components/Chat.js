@@ -7,6 +7,8 @@ import SendRoundedIcon from "@material-ui/icons/SendRounded";
 import { makeStyles } from "@material-ui/core/styles";
 import { useState, useContext } from "react";
 import { Context } from "../components/Store";
+import useMediaQuery from "@material-ui/core/useMediaQuery";
+import { useTheme } from "@material-ui/core/styles";
 
 const useStyles = makeStyles((theme) => ({
   paper: {
@@ -81,6 +83,8 @@ const Chat = ({ self }) => {
   const classes = useStyles();
   const [msg, setMsg] = useState("");
   const [state, dispatch] = useContext(Context);
+  const theme = useTheme();
+  const matches = useMediaQuery(theme.breakpoints.up("md"));
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -144,8 +148,8 @@ const Chat = ({ self }) => {
       {/* Message Sender */}
       <div className={classes.messageSender}>
         <TextareaAutosize
-          rowsMin={4}
-          rowsMax={4}
+          rowsMin={matches ? 4 : 2}
+          rowsMax={matches ? 4 : 2}
           className={classes.textArea}
           aria-label="empty textarea"
           placeholder="Say something ..."

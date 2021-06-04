@@ -7,6 +7,7 @@ import Chat from "../components/Chat";
 import TextField from "@material-ui/core/TextField";
 import VideoChat from "../components/VideoChat";
 import VideoStream from "../components/VideoStream";
+import MobileRoom from "../components/MobileRoom";
 import useMediaQuery from "@material-ui/core/useMediaQuery";
 import { useTheme } from "@material-ui/core/styles";
 
@@ -98,7 +99,7 @@ const Room = () => {
       </Grid>
     );
   } else {
-    return <div>Small Screen</div>;
+    return <MobileRoom self={self} />;
   }
 };
 
