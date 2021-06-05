@@ -15,6 +15,7 @@ import LinkIcon from "@material-ui/icons/Link";
 import CallEndIcon from "@material-ui/icons/CallEnd";
 import IconButton from "@material-ui/core/IconButton";
 import { copyLink } from "../util/Util";
+import withCreateJoin from "../components/WithCreateJoin";
 
 const useStyles = makeStyles((theme) => ({
   paper: {
@@ -41,7 +42,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const Room = () => {
+const Room = ({ handleJoin }) => {
   const [state, dispatch] = useContext(Context);
   const [self, setSelf] = useState("");
   const [username, setUsername] = useState(self.id);
@@ -57,7 +58,15 @@ const Room = () => {
       setSelf(self);
     }
 
-    setPeers(Array.from(state.room.peers.values()));
+    if (state.room == null) {
+      //user tried to join room with direct url
+      const arrayPath = window.location.href.split("/");
+      const roomId = arrayPath[arrayPath.length - 1];
+
+      handleJoin(roomId);
+    } else {
+      setPeers(Array.from(state.room.peers.values()));
+    }
   }, [state]);
 
   const sendUsername = (e) => {
@@ -159,4 +168,4 @@ const Room = () => {
   }
 };
 
-export default Room;
+export default withCreateJoin(Room);
