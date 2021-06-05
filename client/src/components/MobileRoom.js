@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useContext } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import { AppBar, Toolbar, Typography, Drawer } from "@material-ui/core";
 import IconButton from "@material-ui/core/IconButton";
@@ -16,6 +16,8 @@ import CallEndIcon from "@material-ui/icons/CallEnd";
 import Chat from "../components/Chat";
 import VideoChat from "../components/VideoChat";
 import VideoStream from "../components/VideoStream";
+import { copyLink } from "../util/Util";
+import { Context } from "../components/Store";
 
 const drawerHeight = "30vh";
 
@@ -90,48 +92,58 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const copyLink = () => {
-  console.log("copy link");
-};
-
 const endCall = () => {
   console.log("end call");
 };
 
-const actions = [
-  {
-    icon: <ChatIcon style={{ color: "#fff" }} />,
-    name: "Chat",
-    hasTab: true,
-  },
-  {
-    icon: <VideoCallIcon style={{ color: "#fff" }} />,
-    name: "Video Call",
-    hasTab: true,
-  },
-  {
-    icon: <LinkIcon style={{ color: "#fff" }} />,
-    name: "Copy room link",
-    hasTab: false,
-    action: copyLink,
-  },
-  {
-    icon: <CallEndIcon style={{ color: "red" }} />,
-    name: "End Call",
-    hasTab: false,
-    action: endCall,
-  },
-];
-
-const MobileRoom = ({ self, state, peers }) => {
+const MobileRoom = ({ self, peers }) => {
   const classes = useStyles();
   const [openDrawer, setOpenDrawer] = useState(false);
   const [openSpeedDial, setOpenSpeedDial] = useState(false);
   const [value, setValue] = useState(0);
+  const [state, dispatch] = useContext(Context);
 
   const toggleDrawer = () => {
     setOpenDrawer(!openDrawer);
   };
+
+  const copyRoomLink = async (e) => {
+    const result = await copyLink();
+    console.log("Result >>>>>", result);
+    dispatch({
+      type: "SHOW_SNACKBAR",
+      payload: {
+        open: true,
+        message: result.msg,
+        severity: result.success ? "success" : "error",
+      },
+    });
+  };
+
+  const actions = [
+    {
+      icon: <ChatIcon style={{ color: "#fff" }} />,
+      name: "Chat",
+      hasTab: true,
+    },
+    {
+      icon: <VideoCallIcon style={{ color: "#fff" }} />,
+      name: "Video Call",
+      hasTab: true,
+    },
+    {
+      icon: <LinkIcon style={{ color: "#fff" }} />,
+      name: "Copy room link",
+      hasTab: false,
+      action: copyRoomLink,
+    },
+    {
+      icon: <CallEndIcon style={{ color: "red" }} />,
+      name: "End Call",
+      hasTab: false,
+      action: endCall,
+    },
+  ];
 
   const tabClicked = (e, index) => {
     console.log("Index", index);

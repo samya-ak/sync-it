@@ -54,19 +54,16 @@ io.on("connection", (socket) => {
       const room = rooms.get(roomId);
       let otherPeers = [];
 
-      if (rooms.has(roomId) && room.size) {
+      if (rooms.has(roomId)) {
         room.forEach((peer) => {
           otherPeers.push(peer);
         });
-        socket.join(roomId);
-        socket.data.room = roomId;
 
         socket.to(roomId).emit("new peer", socket.id);
         socket.emit("other peers", otherPeers);
-      } else {
-        console.log("no room: " + roomId);
-        socket.emit("socket-error", "Room doesn't Exist");
       }
+      socket.join(roomId);
+      socket.data.room = roomId;
     } catch (e) {
       console.log(e);
     }

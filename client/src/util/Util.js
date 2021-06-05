@@ -5,21 +5,23 @@ export const copyLink = async () => {
     });
     if (result.state === "granted" || result.state === "prompt") {
       const link = window.location.href;
-      await navigator.clipboard.writeText(link);
+      const arrayLink = link.split("/");
+      const id = arrayLink[arrayLink.length - 1];
+      await navigator.clipboard.writeText(id);
       return {
         success: true,
-        msg: "Room link copied.",
+        msg: "Room Id copied.",
       };
     } else {
       return {
         success: false,
-        msg: "Permission Error in copying link.",
+        msg: "Permission Error in copying room id.",
       };
     }
   } catch (e) {
     return {
       success: false,
-      msg: "Error in copying link.",
+      msg: "Error in copying room id.",
     };
   }
 };

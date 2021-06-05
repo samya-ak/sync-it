@@ -69,7 +69,6 @@ const Home = () => {
   let history = useHistory();
   const [state, dispatch] = useContext(Context);
   const [roomId, setRoomId] = useState("");
-  let socketError = false;
   const myStream = useRef();
   const classes = useStyles();
   const changeBorderColor = borderInput();
@@ -138,43 +137,53 @@ const Home = () => {
     dispatch({ type: "ADD_ROOM", payload: room });
   };
 
+  const isNumeric = (value) => {
+    return /^\d+$/.test(value);
+  };
+
   const handleJoin = (e) => {
-    e.preventDefault();
     const socket = io();
-    socket.emit("join room", roomId);
-    socket.on("socket-error", (errorMessage) => {
-      handleError(errorMessage);
-      socketError = true;
+
+    if (isNumeric(roomId)) {
+      socket.emit("join room", roomId);
+    } else {
+      handleError("Invalid room id.");
+      return;
+    }
+
+    const room = new Room(roomId);
+    joinRoom(room, socket);
+
+    socket.on("other peers", (otherPeers) => {
+      otherPeers.forEach((peer) => {
+        const otherPeer = new Peer(
+          peer,
+          room.id,
+          socket,
+          dispatch,
+          myStream.current
+        );
+        room.peers = otherPeer;
+        otherPeer.call();
+      });
+      dispatch({ type: "ADD_ROOM", payload: room });
     });
 
-    if (!socketError) {
-      const room = new Room(roomId);
-      joinRoom(room, socket);
+    newPeerListener(socket, room);
 
-      socket.on("other peers", (otherPeers) => {
-        otherPeers.forEach((peer) => {
-          const otherPeer = new Peer(
-            peer,
-            room.id,
-            socket,
-            dispatch,
-            myStream.current
-          );
-          room.peers = otherPeer;
-          otherPeer.call();
-        });
-        dispatch({ type: "ADD_ROOM", payload: room });
-      });
-
-      newPeerListener(socket, room);
-
-      history.push(`/rooms/${roomId}`);
-      handleDisconnect(socket, room);
-    }
+    history.push(`/rooms/${roomId}`);
+    handleDisconnect(socket, room);
   };
 
   const handleError = (msg) => {
-    dispatch({ type: "SET_ERROR", payload: msg });
+    dispatch({
+      type: "SHOW_SNACKBAR",
+      payload: {
+        open: true,
+        message: msg,
+        severity: "error",
+      },
+    });
   };
 
   return (
@@ -222,7 +231,7 @@ const Home = () => {
               </Button>
               <FormControl variant="outlined">
                 <OutlinedInput
-                  placeholder="Enter a code or link"
+                  placeholder="Enter room id"
                   id="outlined-adornment-amount"
                   startAdornment={
                     <InputAdornment position="start">
@@ -267,24 +276,6 @@ const Home = () => {
       </Grid>
     </div>
   );
-
-  // return (
-  //   <div>
-  //     <form onSubmit={handleSubmit}>
-  //       <button type="button" onClick={createRoom}>
-  //         Create room
-  //       </button>
-  //       <br />
-  //       <br />
-  //       <input
-  //         type="text"
-  //         required
-  //         onChange={(e) => setRoomId(e.target.value)}
-  //       ></input>{" "}
-  //       <button type="submit">Join Room</button>
-  //     </form>
-  //   </div>
-  // );
 };
 
 export default Home;
