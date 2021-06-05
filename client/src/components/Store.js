@@ -8,6 +8,11 @@ const initialState = {
   username: "Anonymous",
   messages: [],
   refresh: 0,
+  snackbar: {
+    open: false,
+    severity: null,
+    message: null,
+  },
 };
 
 const Store = ({ children }) => {

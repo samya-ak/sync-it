@@ -6,6 +6,16 @@ const Reducer = (state, action) => {
         error: action.payload,
       };
 
+    case "SHOW_SNACKBAR":
+      return {
+        ...state,
+        snackbar: {
+          open: action.payload.open,
+          severity: action.payload.severity,
+          message: action.payload.message,
+        },
+      };
+
     case "ADD_ROOM":
       return {
         ...state,

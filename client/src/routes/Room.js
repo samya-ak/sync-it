@@ -14,6 +14,7 @@ import { AppBar, Toolbar, Typography } from "@material-ui/core";
 import LinkIcon from "@material-ui/icons/Link";
 import CallEndIcon from "@material-ui/icons/CallEnd";
 import IconButton from "@material-ui/core/IconButton";
+import { copyLink } from "../util/Util";
 
 const useStyles = makeStyles((theme) => ({
   paper: {
@@ -71,6 +72,24 @@ const Room = () => {
     }
   };
 
+  const copyRoomLink = async (e) => {
+    const result = await copyLink();
+    console.log("Result >>>>>", result);
+    if (result.success) {
+      dispatch({
+        type: "SHOW_SNACKBAR",
+        payload: { open: true, message: result.msg, severity: "success" },
+      });
+    } else {
+      dispatch({
+        type: "SHOW_SNACKBAR",
+        payload: { open: true, message: result.msg, severity: "error" },
+      });
+    }
+  };
+
+  const endCall = () => {};
+
   if (matches) {
     return (
       <Grid container style={{ height: "100vh" }} spacing={1}>
@@ -86,11 +105,17 @@ const Room = () => {
                   SyncIt
                 </Typography>
 
-                <IconButton className={classes.utilButtons}>
+                <IconButton
+                  className={classes.utilButtons}
+                  onClick={(e) => copyRoomLink()}
+                >
                   <LinkIcon />
                 </IconButton>
 
-                <IconButton className={classes.utilButtons}>
+                <IconButton
+                  className={classes.utilButtons}
+                  onClick={() => endCall()}
+                >
                   <CallEndIcon />
                 </IconButton>
               </Toolbar>
