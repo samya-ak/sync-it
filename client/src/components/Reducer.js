@@ -47,6 +47,22 @@ const Reducer = (state, action) => {
         refresh: state.refresh + action.payload,
       };
 
+    case "RESET":
+      console.log("reset>>>>", state);
+      return {
+        error: null,
+        room: null,
+        self: null,
+        username: "Anonymous",
+        messages: [],
+        refresh: 0,
+        snackbar: {
+          open: false,
+          severity: null,
+          message: null,
+        },
+      };
+
     default:
       return state;
   }

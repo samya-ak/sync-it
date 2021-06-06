@@ -16,6 +16,7 @@ import CallEndIcon from "@material-ui/icons/CallEnd";
 import IconButton from "@material-ui/core/IconButton";
 import { copyLink } from "../util/Util";
 import withCreateJoin from "../components/WithCreateJoin";
+import { useHistory } from "react-router-dom";
 
 const useStyles = makeStyles((theme) => ({
   paper: {
@@ -45,8 +46,9 @@ const useStyles = makeStyles((theme) => ({
 const Room = ({ handleJoin }) => {
   const [state, dispatch] = useContext(Context);
   const [self, setSelf] = useState("");
-  const [username, setUsername] = useState(self.id);
+  const [username, setUsername] = useState("");
   const [peers, setPeers] = useState([]);
+  let history = useHistory();
 
   const classes = useStyles();
   const theme = useTheme();
@@ -97,7 +99,13 @@ const Room = ({ handleJoin }) => {
     }
   };
 
-  const endCall = () => {};
+  const endCall = () => {
+    if (self.socket) {
+      self.socket.emit("leave room", self.room);
+      dispatch({ type: "RESET" });
+      history.push("/");
+    }
+  };
 
   if (matches) {
     return (
@@ -164,7 +172,9 @@ const Room = ({ handleJoin }) => {
       </Grid>
     );
   } else {
-    return <MobileRoom self={self} state={state} peers={peers} />;
+    return (
+      <MobileRoom self={self} state={state} peers={peers} endCall={endCall} />
+    );
   }
 };
 

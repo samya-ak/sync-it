@@ -88,6 +88,11 @@ io.on("connection", (socket) => {
     socket.to(socket.data.room).emit("disconnected", socket.id);
   });
 
+  socket.on("leave room", (roomId) => {
+    socket.leave(roomId);
+    socket.to(socket.data.room).emit("disconnected", socket.id);
+  });
+
   socket.on("videoStatusChange", (payload) => {
     socket.to(payload.room).emit("videoStatusChanged", payload);
   });

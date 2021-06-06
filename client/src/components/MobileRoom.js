@@ -92,11 +92,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const endCall = () => {
-  console.log("end call");
-};
-
-const MobileRoom = ({ self, peers }) => {
+const MobileRoom = ({ self, peers, endCall }) => {
   const classes = useStyles();
   const [openDrawer, setOpenDrawer] = useState(false);
   const [openSpeedDial, setOpenSpeedDial] = useState(false);
