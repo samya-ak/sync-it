@@ -41,6 +41,9 @@ app.get("/server", (req, res) => {
 //signaling server
 const io = socket(server);
 
+//track broadcasting rooms
+const broadcastingRooms = new Map();
+
 io.on("connection", (socket) => {
   //signaling
   socket.on("create room", (roomId) => {
@@ -109,7 +112,18 @@ io.on("connection", (socket) => {
     socket.to(payload.room).emit("broadcast-started", payload);
   });
 
+  socket.on("check-stream-available", (roomId, callback) => {
+    if (broadcastingRooms.has(roomId)) {
+      callback({ isStreaming: true });
+    } else {
+      callback({ isStreaming: false });
+    }
+  });
+
   socket.on("stop streaming", (roomId) => {
+    if (broadcastingRooms.has(roomId)) {
+      broadcastingRooms.delete(roomId);
+    }
     socket.to(roomId).emit("streaming stopped");
   });
 });
@@ -118,8 +132,6 @@ io.on("connection", (socket) => {
 {
   app.use(express.json());
   app.use(express.urlencoded({ extended: true }));
-
-  const broadcastingRooms = new Map();
 
   const ice = {
     iceServers: [
@@ -179,8 +191,6 @@ io.on("connection", (socket) => {
         broadcastingRooms.get(body.room)
       );
     }
-    //TODO: need to handle condition where there is already a broadcasting room but another peer wants to
-    //broadcast
 
     peer.onicecandidate = (e) => handleIceCandidate(e, body.id);
     peer.ontrack = (e) => handleTrackEvent(e, body.room);

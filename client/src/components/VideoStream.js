@@ -1,8 +1,8 @@
 import { useState, useEffect, useRef } from "react";
 import SFUPeer from "../util/SFUPeer";
-import { makeStyles, useTheme } from "@material-ui/core/styles";
+import { makeStyles } from "@material-ui/core/styles";
 import OndemandVideoIcon from "@material-ui/icons/OndemandVideo";
-import { Typography, useMediaQuery } from "@material-ui/core";
+import { Typography } from "@material-ui/core";
 import Button from "@material-ui/core/Button";
 import StopIcon from "@material-ui/icons/Stop";
 
@@ -27,8 +27,6 @@ const VideoStream = ({ self }) => {
   const [hasStream, setHasStream] = useState(false);
   const sfuPeerRef = useRef(null);
   const classes = useStyles();
-  const theme = useTheme();
-  const matches = useMediaQuery(theme.breakpoints.up("md"));
 
   useEffect(() => {
     if (videoUrl) {
@@ -68,13 +66,24 @@ const VideoStream = ({ self }) => {
         sfuPeerRef.current = new SFUPeer(false, null, self);
       });
 
+      //check if someone is streaming in the room
+      self.socket.emit("check-stream-available", self.room, (response) => {
+        console.log("checking if someone is streaming in room------------");
+        if (response.isStreaming) {
+          sfuPeerRef.current = new SFUPeer(false, null, self);
+        } else {
+          console.log("noone is streaming video in room-------");
+        }
+      });
+
       self.socket.on("streaming stopped", () => {
         console.log("streaming stopped", self);
-        sfuPeerRef.current.closeConnection();
+        sfuPeerRef.current && sfuPeerRef.current.closeConnection();
         sfuPeerRef.current = null;
         setHasStream(false);
       });
 
+      //event listener that gets stream from SFUPeer and shows in ui
       document.addEventListener("initStream", (e) => {
         console.log("Init Stream>>>>", e.detail);
         setHasStream(true);
