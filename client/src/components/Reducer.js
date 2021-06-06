@@ -48,7 +48,6 @@ const Reducer = (state, action) => {
       };
 
     case "RESET":
-      console.log("reset>>>>", state);
       return {
         error: null,
         room: null,

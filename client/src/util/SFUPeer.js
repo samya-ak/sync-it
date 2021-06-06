@@ -3,6 +3,7 @@ class SFUPeer {
     this._isBroadcaster = isBroadcaster;
     this._stream = videoStream;
     this._self = self;
+    this._addedTracks = [];
     this._sfuPeer = new RTCPeerConnection({
       iceServers: [
         {
@@ -16,37 +17,50 @@ class SFUPeer {
       ],
     });
 
+    console.log("creating sfu peer-------");
     self.socket.on("sfu-ice-candidate", this.handleSfuIceCandidate.bind(this));
     this._sfuPeer.onicecandidate = (e) => this.handleICECandidateEvent(e);
     this._sfuPeer.onnegotiationneeded = () =>
       this.handleNegotiationNeededEvent();
 
     if (!this._isBroadcaster) {
+      console.log("is not broadcaster------------");
       this._sfuPeer.addTransceiver("video", { direction: "recvonly" });
       this._sfuPeer.addTransceiver("audio", { direction: "recvonly" });
       this._sfuPeer.ontrack = (e) => this.handleTrackEvent(e);
     } else {
+      console.log("is broadcaster----------");
       console.log(
         "adding stream to broadcaster.------->",
         this._stream.getTracks()
       );
-      this._stream
-        .getTracks()
-        .forEach((track) => this._sfuPeer.addTrack(track, this._stream));
+      this._stream.getTracks().forEach((track) => {
+        let sender = this._sfuPeer.addTrack(track, this._stream);
+        this._addedTracks.push(sender);
+      });
     }
-    console.log("creating sfu peer ----->", this);
+  }
+
+  stopStreaming() {
+    this._addedTracks.forEach((sender) => {
+      this._sfuPeer.removeTrack(sender);
+    });
+    this._sfuPeer.close();
+  }
+
+  closeConnection() {
+    this._sfuPeer.close();
   }
 
   set stream(videoStream) {
     this._stream = videoStream;
-    // this._stream
-    //   .getTracks()
-    //   .forEach((track) => this._sfuPeer.addTrack(track, this._stream));
   }
 
   handleSfuIceCandidate = (incoming) => {
     const candidate = new RTCIceCandidate(incoming.candidate);
-    this._sfuPeer.addIceCandidate(candidate).catch((e) => console.log(e));
+    if (this._sfuPeer.signalingState !== "closed") {
+      this._sfuPeer.addIceCandidate(candidate).catch((e) => console.log(e));
+    }
     console.log("Sfu ice candidate added>>>>>");
   };
 
@@ -123,19 +137,8 @@ class SFUPeer {
     const media = e.streams[0];
     console.log("Received video stream >>>>>>>>", media.getTracks());
     console.log("Media is active?>>>", media.active);
-    if (!document.getElementById("video-consumer")) {
-      const container = document.getElementById("video-stream-container");
-      const selector = document.getElementById("video-selector");
-      let videoElement = document.createElement("video");
-      videoElement.id = "video-consumer";
-      videoElement.controls = true;
-      videoElement.autoplay = false;
-      videoElement.style.width = "100%";
-      videoElement.style.maxHeight = "403px";
-      videoElement.srcObject = e.streams[0];
-      selector.remove();
-      container.append(videoElement);
-    }
+    const initStream = new CustomEvent("initStream", { detail: media });
+    document.dispatchEvent(initStream);
   }
 }
 

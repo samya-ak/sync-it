@@ -108,6 +108,10 @@ io.on("connection", (socket) => {
   socket.on("broadcasting", (payload) => {
     socket.to(payload.room).emit("broadcast-started", payload);
   });
+
+  socket.on("stop streaming", (roomId) => {
+    socket.to(roomId).emit("streaming stopped");
+  });
 });
 
 //sfu server

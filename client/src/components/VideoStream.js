@@ -24,6 +24,7 @@ const useStyles = makeStyles((theme) => ({
 
 const VideoStream = ({ self }) => {
   const [videoUrl, setVideoUrl] = useState(null);
+  const [hasStream, setHasStream] = useState(false);
   const sfuPeerRef = useRef(null);
   const classes = useStyles();
   const theme = useTheme();
@@ -41,12 +42,22 @@ const VideoStream = ({ self }) => {
   const handleAddTrack = (stream) => {
     if (!sfuPeerRef.current) {
       //when new stream needs to be created - you are streaming
+      console.log("no sfupeer--------", stream);
       sfuPeerRef.current = new SFUPeer(true, stream, self);
       // self.socket.emit("broadcasting", { room: self.room });
     } else {
+      console.log("has sfupeer-------", stream);
       //there's already a webrtc connection, but wanna stream another video file
-      sfuPeerRef.current.stream = stream;
+      // sfuPeerRef.current.stream = stream;
     }
+  };
+
+  const stopStreaming = () => {
+    sfuPeerRef.current.stopStreaming();
+    sfuPeerRef.current = null;
+    self.socket.emit("stop streaming", self.room);
+    setVideoUrl("");
+    setHasStream(false);
   };
 
   useEffect(() => {
@@ -57,8 +68,23 @@ const VideoStream = ({ self }) => {
         sfuPeerRef.current = new SFUPeer(false, null, self);
       });
 
+      self.socket.on("streaming stopped", () => {
+        console.log("streaming stopped", self);
+        sfuPeerRef.current.closeConnection();
+        sfuPeerRef.current = null;
+        setHasStream(false);
+      });
+
+      document.addEventListener("initStream", (e) => {
+        console.log("Init Stream>>>>", e.detail);
+        setHasStream(true);
+        const target = document.getElementById("video-stream");
+        target.srcObject = e.detail;
+      });
+
       return () => {
         self.socket.off("broadcast-started");
+        self.socket.off("streaming stopped");
       };
     }
   }, [self]);
@@ -70,11 +96,12 @@ const VideoStream = ({ self }) => {
         type="file"
         style={{ display: "none" }}
         onChange={(e) => {
+          setHasStream(true);
           setVideoUrl(URL.createObjectURL(e.target.files[0]));
         }}
       />
 
-      {!videoUrl ? (
+      {!hasStream ? (
         <div className={classes.selectorMobileHeight}>
           <div
             className={`${classes.chooseFile} ${classes.selectorMobileHeight}`}
@@ -98,16 +125,18 @@ const VideoStream = ({ self }) => {
             src={videoUrl}
             controls
           ></video>
-          <Button
-            variant="contained"
-            color="secondary"
-            className={classes.button}
-            startIcon={<StopIcon style={{ color: "#fff" }} />}
-            onClick={() => setVideoUrl("")}
-            style={{ color: "#fff", textTransform: "capitalize" }}
-          >
-            Stop Streaming
-          </Button>
+          {videoUrl && (
+            <Button
+              variant="contained"
+              color="secondary"
+              className={classes.button}
+              startIcon={<StopIcon style={{ color: "#fff" }} />}
+              onClick={() => stopStreaming()}
+              style={{ color: "#fff", textTransform: "capitalize" }}
+            >
+              Stop Streaming
+            </Button>
+          )}
         </div>
       )}
     </div>
