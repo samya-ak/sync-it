@@ -101,6 +101,7 @@ const Chat = ({ self }) => {
       value: msg,
       yours: true,
       time: new Date(),
+      author: state.username,
     };
     dispatch({ type: "UPDATE_MESSAGES", payload: message });
     setMsg("");
@@ -130,9 +131,7 @@ const Chat = ({ self }) => {
                 </CardContent>
               </Card>
               <div className={classes.author}>
-                {message.from
-                  ? state.room.peers.get(message.from).name
-                  : state.username}
+                {message.author}
                 &nbsp;{" "}
                 {message.time.toLocaleString("en-US", {
                   hour: "numeric",

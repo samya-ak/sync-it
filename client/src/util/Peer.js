@@ -66,6 +66,10 @@ export default class Peer {
     return this._receivingStream;
   }
 
+  set name(name) {
+    this._username = name;
+  }
+
   call() {
     this._rtcPeer = this.createRTCPeer(true);
     this._sendingStream
@@ -217,6 +221,7 @@ export default class Peer {
         yours: false,
         from: this._id,
         time: new Date(),
+        author: this._username,
       };
       console.log("Got this message>>> ", newMessage);
       this._dispatch({ type: "UPDATE_MESSAGES", payload: newMessage });

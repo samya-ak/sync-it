@@ -18,6 +18,8 @@ import VideoChat from "../components/VideoChat";
 import VideoStream from "../components/VideoStream";
 import { copyLink } from "../util/Util";
 import { Context } from "../components/Store";
+import PersonIcon from "@material-ui/icons/Person";
+import { Paper, TextField } from "@material-ui/core";
 
 const drawerHeight = "30vh";
 
@@ -90,9 +92,19 @@ const useStyles = makeStyles((theme) => ({
       }),
     },
   },
+  paper: {
+    height: "100%",
+    width: "100%",
+    backgroundColor: "#EAECEE ",
+  },
+  yourName: {
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+  },
 }));
 
-const MobileRoom = ({ self, peers, endCall }) => {
+const MobileRoom = ({ self, peers, endCall, setName, sendUsername }) => {
   const classes = useStyles();
   const [openDrawer, setOpenDrawer] = useState(false);
   const [openSpeedDial, setOpenSpeedDial] = useState(false);
@@ -125,6 +137,11 @@ const MobileRoom = ({ self, peers, endCall }) => {
     {
       icon: <VideoCallIcon style={{ color: "#fff" }} />,
       name: "Video Call",
+      hasTab: true,
+    },
+    {
+      icon: <PersonIcon style={{ color: "#fff" }} />,
+      name: "User",
       hasTab: true,
     },
     {
@@ -223,6 +240,22 @@ const MobileRoom = ({ self, peers, endCall }) => {
         <TabPanel value={value} index={1}>
           <div className="content-box">
             <VideoChat self={self} state={state} peers={peers} />
+          </div>
+        </TabPanel>
+        <TabPanel value={value} index={2}>
+          <div className="content-box">
+            <Paper className={`${classes.paper} ${classes.yourName}`}>
+              <TextField
+                id="user-name"
+                label="Your Name"
+                variant="outlined"
+                size="small"
+                defaultValue={state.username}
+                style={{ backgroundColor: "#fff" }}
+                onChange={(e) => setName(e.target.value)}
+                onKeyPress={sendUsername}
+              />
+            </Paper>
           </div>
         </TabPanel>
       </main>

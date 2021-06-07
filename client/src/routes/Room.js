@@ -45,7 +45,7 @@ const useStyles = makeStyles((theme) => ({
 
 const Room = ({ handleJoin }) => {
   const [state, dispatch] = useContext(Context);
-  const [self, setSelf] = useState("");
+  const [self, setSelf] = useState(null);
   const [username, setUsername] = useState("");
   const [peers, setPeers] = useState([]);
   let history = useHistory();
@@ -80,6 +80,10 @@ const Room = ({ handleJoin }) => {
         }
       }
       dispatch({ type: "ADD_USERNAME", payload: username });
+      dispatch({
+        type: "SHOW_SNACKBAR",
+        payload: { open: true, message: "Username set.", severity: "success" },
+      });
     }
   };
 
@@ -97,6 +101,11 @@ const Room = ({ handleJoin }) => {
         payload: { open: true, message: result.msg, severity: "error" },
       });
     }
+  };
+
+  const setName = (name) => {
+    self.name = name;
+    setUsername(name);
   };
 
   const endCall = () => {
@@ -157,9 +166,9 @@ const Room = ({ handleJoin }) => {
                 label="Your Name"
                 variant="outlined"
                 size="small"
-                defaultValue={username}
+                defaultValue={state.username}
                 style={{ backgroundColor: "#fff" }}
-                onChange={(e) => setUsername(e.target.value)}
+                onChange={(e) => setName(e.target.value)}
                 onKeyPress={sendUsername}
               />
             </Paper>
@@ -173,7 +182,14 @@ const Room = ({ handleJoin }) => {
     );
   } else {
     return (
-      <MobileRoom self={self} state={state} peers={peers} endCall={endCall} />
+      <MobileRoom
+        self={self}
+        state={state}
+        peers={peers}
+        endCall={endCall}
+        setName={setName}
+        sendUsername={sendUsername}
+      />
     );
   }
 };
