@@ -66,6 +66,11 @@ export default class Peer {
     return this._receivingStream;
   }
 
+  closeConnection() {
+    console.log("closing ++", this._rtcPeer);
+    this._rtcPeer.close();
+  }
+
   set name(name) {
     this._username = name;
   }

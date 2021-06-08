@@ -115,6 +115,8 @@ const Room = ({ handleJoin }) => {
   };
 
   const endCall = () => {
+    //close connection with all peers
+    peers.forEach((peer) => peer.id === self.id || peer.closeConnection());
     if (self.socket) {
       self.socket.emit("leave room", self.room);
       dispatch({ type: "RESET" });
