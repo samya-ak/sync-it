@@ -87,24 +87,24 @@ const Chat = ({ self }) => {
   const matches = useMediaQuery(theme.breakpoints.up("md"));
 
   const handleSubmit = (e) => {
-    e.preventDefault();
-    console.log("sending>>>", msg);
-
-    // send same message to all connected peers
-    for (let [key, value] of state.room.peers) {
-      if (key !== self.id) {
-        console.log("sending message to>>>", value);
-        value.sendMessage(JSON.stringify({ msg }));
+    if (msg.length > 0) {
+      console.log("sending>>>", msg);
+      // send same message to all connected peers
+      for (let [key, value] of state.room.peers) {
+        if (key !== self.id) {
+          console.log("sending message to>>>", value);
+          value.sendMessage(JSON.stringify({ msg }));
+        }
       }
+      const message = {
+        value: msg,
+        yours: true,
+        time: new Date(),
+        author: state.username,
+      };
+      dispatch({ type: "UPDATE_MESSAGES", payload: message });
+      setMsg("");
     }
-    const message = {
-      value: msg,
-      yours: true,
-      time: new Date(),
-      author: state.username,
-    };
-    dispatch({ type: "UPDATE_MESSAGES", payload: message });
-    setMsg("");
   };
 
   return (

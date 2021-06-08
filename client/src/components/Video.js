@@ -3,7 +3,8 @@ import VideocamIcon from "@material-ui/icons/Videocam";
 import VideocamOffIcon from "@material-ui/icons/VideocamOff";
 import MicIcon from "@material-ui/icons/Mic";
 import MicOffIcon from "@material-ui/icons/MicOff";
-import { makeStyles } from "@material-ui/core/styles";
+import { makeStyles, useTheme } from "@material-ui/core/styles";
+import profile from "../images/profile.png";
 
 const useStyles = makeStyles((theme) => ({
   tealVariant: {
@@ -40,10 +41,11 @@ const useStyles = makeStyles((theme) => ({
 const Video = ({ stream, isMine, peer }) => {
   const streamRef = useRef();
   const classes = useStyles();
-  const [isMicOn, setIsMicOn] = useState(true);
-  const [isVideoOn, setIsVideoOn] = useState(true);
+  const [isMicOn, setIsMicOn] = useState(stream !== null);
+  const [isVideoOn, setIsVideoOn] = useState(stream !== null);
   const isMicOnRef = useRef(isMicOn);
   const isVideoOnRef = useRef(isVideoOn);
+  const theme = useTheme();
 
   const _setIsMicOn = (val) => {
     isMicOnRef.current = val;
@@ -56,9 +58,11 @@ const Video = ({ stream, isMine, peer }) => {
   };
 
   const toggleMute = () => {
-    _setIsMicOn(!isMicOn);
-    const toggleSound = new Event("toggleMute");
-    document.dispatchEvent(toggleSound);
+    if (stream !== null) {
+      _setIsMicOn(!isMicOn);
+      const toggleSound = new Event("toggleMute");
+      document.dispatchEvent(toggleSound);
+    }
   };
 
   useEffect(() => {
@@ -74,9 +78,11 @@ const Video = ({ stream, isMine, peer }) => {
   }, [isMicOn]);
 
   const toggleVideoStream = () => {
-    _setIsVideoOn(!isVideoOn);
-    const toggleVideo = new Event("toggleVideoStream");
-    document.dispatchEvent(toggleVideo);
+    if (stream !== null) {
+      _setIsVideoOn(!isVideoOn);
+      const toggleVideo = new Event("toggleVideoStream");
+      document.dispatchEvent(toggleVideo);
+    }
   };
 
   useEffect(() => {
@@ -95,7 +101,8 @@ const Video = ({ stream, isMine, peer }) => {
     if (streamRef.current) {
       streamRef.current.srcObject = stream;
     }
-  }, [stream, streamRef]);
+    console.log("Got this stream in video -------", stream);
+  }, [stream]);
 
   useEffect(() => {
     if (!isMine) {
@@ -150,14 +157,27 @@ const Video = ({ stream, isMine, peer }) => {
 
   return (
     <div>
-      <div style={{ marginTop: "15px" }}>
+      <div
+        style={{
+          marginTop: "15px",
+          backgroundColor: theme.palette.secondary.light,
+        }}
+      >
         <div className={classes.container}>
-          <video
-            style={{ height: "inherit", objectFit: "cover" }}
-            ref={streamRef}
-            muted={isMine ? true : false}
-            autoPlay
-          />
+          {stream === null ? (
+            <img
+              src={profile}
+              alt="no video stream"
+              style={{ width: "100%", height: "inherit", objectFit: "contain" }}
+            />
+          ) : (
+            <video
+              style={{ height: "inherit", objectFit: "cover" }}
+              ref={streamRef}
+              muted={isMine ? true : false}
+              autoPlay
+            />
+          )}
           {!isMine ? (
             <div className={classes.bottom}>
               <span className={classes.name}>{peer.name}</span>

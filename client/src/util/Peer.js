@@ -72,9 +72,11 @@ export default class Peer {
 
   call() {
     this._rtcPeer = this.createRTCPeer(true);
-    this._sendingStream
-      .getTracks()
-      .forEach((track) => this._rtcPeer.addTrack(track, this._sendingStream));
+    if (this._sendingStream !== null) {
+      this._sendingStream
+        .getTracks()
+        .forEach((track) => this._rtcPeer.addTrack(track, this._sendingStream));
+    }
   }
 
   createRTCPeer(caller = false) {
@@ -122,7 +124,10 @@ export default class Peer {
   handleTrackEvent(e) {
     this._receivingStream = e.streams[0];
     this._dispatch({ type: "REFRESH", payload: 1 });
-    console.log("handle Track event fired for>>>", this);
+    console.log(
+      "handle Track event fired for>>>",
+      this._receivingStream.getTracks()
+    );
   }
 
   handleICECandidateEvent(e) {
@@ -164,11 +169,17 @@ export default class Peer {
       this._rtcPeer
         .setRemoteDescription(desc)
         .then(() => {
-          this._sendingStream
-            .getTracks()
-            .forEach((track) =>
-              this._rtcPeer.addTrack(track, this._sendingStream)
+          if (this._sendingStream !== null) {
+            this._sendingStream
+              .getTracks()
+              .forEach((track) =>
+                this._rtcPeer.addTrack(track, this._sendingStream)
+              );
+            console.log(
+              "sending this stream from ",
+              this._sendingStream.getTracks()
             );
+          }
         })
         .then(() => {
           return this._rtcPeer.createAnswer();

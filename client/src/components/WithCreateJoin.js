@@ -19,6 +19,10 @@ const withCreateJoin = (WrappedComponent) => {
         .then((stream) => {
           myStream.current = stream;
           setHasStream(true);
+        })
+        .catch((err) => {
+          myStream.current = null;
+          showError("Media device not found or not allowed.");
         });
     }, []);
 
@@ -83,16 +87,22 @@ const withCreateJoin = (WrappedComponent) => {
     };
 
     const handleJoin = async (roomId) => {
+      console.log("handle Join----------");
       if (!hasStream) {
-        //when room is accessed directly from url, there is no stream so
+        try {
+          //when room is accessed directly from url, there is no stream so
 
-        const stream = await navigator.mediaDevices.getUserMedia({
-          audio: true,
-          video: true,
-        });
+          const stream = await navigator.mediaDevices.getUserMedia({
+            audio: true,
+            video: true,
+          });
 
-        myStream.current = stream;
-        setHasStream(true);
+          myStream.current = stream;
+          setHasStream(true);
+        } catch (err) {
+          myStream.current = null;
+          showError("Media device not found or not allowed.");
+        }
       }
       const socket = io();
 
@@ -101,7 +111,7 @@ const withCreateJoin = (WrappedComponent) => {
       if (isNumeric(roomId)) {
         socket.emit("join room", roomId);
       } else {
-        handleError("Invalid room id.");
+        showError("Invalid room id.");
         return;
       }
 
@@ -129,7 +139,7 @@ const withCreateJoin = (WrappedComponent) => {
       handleDisconnect(socket, room);
     };
 
-    const handleError = (msg) => {
+    const showError = (msg) => {
       dispatch({
         type: "SHOW_SNACKBAR",
         payload: {

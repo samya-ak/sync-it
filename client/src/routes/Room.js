@@ -55,18 +55,24 @@ const Room = ({ handleJoin }) => {
   const matches = useMediaQuery(theme.breakpoints.up("md"));
 
   useEffect(() => {
-    if (state.self) {
-      const self = state.room.peers.get(state.self);
-      setSelf(self);
-    }
-
     if (state.room == null) {
       //user tried to join room with direct url
       const arrayPath = window.location.href.split("/");
       const roomId = arrayPath[arrayPath.length - 1];
 
+      console.log("handle join in room use effect");
       handleJoin(roomId);
-    } else {
+    }
+  }, []);
+
+  useEffect(() => {
+    if (state.self) {
+      const self = state.room.peers.get(state.self);
+      setSelf(self);
+    }
+
+    if (state.room !== null) {
+      console.log("this causes re-render of video chat----------");
       setPeers(Array.from(state.room.peers.values()));
     }
   }, [state]);

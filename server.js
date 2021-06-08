@@ -73,12 +73,12 @@ io.on("connection", (socket) => {
   });
 
   socket.on("offer", (payload) => {
-    console.log("offer>>>", payload);
+    console.log("offer>>>");
     io.to(payload.target).emit("offer", payload);
   });
 
   socket.on("answer", (payload) => {
-    console.log("answer >>>", payload);
+    console.log("answer >>>");
     io.to(payload.target).emit("answer", payload);
   });
 
@@ -88,6 +88,7 @@ io.on("connection", (socket) => {
 
   //miscellanous
   socket.on("disconnect", () => {
+    console.log("disconnected", socket.id);
     socket.to(socket.data.room).emit("disconnected", socket.id);
   });
 
@@ -259,9 +260,6 @@ io.on("connection", (socket) => {
     }
   });
 }
-
-//TODO: delete peer from broadcasting room when that user leaves the room,
-//TODO: delete the broadcasting room when there are no peers inside it
 
 io.of("/").adapter.on("create-room", (roomId) => {
   console.log(`Room created: ${roomId}`);
