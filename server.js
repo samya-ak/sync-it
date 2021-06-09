@@ -45,6 +45,9 @@ const io = socket(server);
 const broadcastingRooms = new Map();
 
 io.on("connection", (socket) => {
+  socket.on("error", (error) => {
+    console.log(error);
+  });
   //signaling
   socket.on("create room", (roomId) => {
     socket.join(roomId);

@@ -49,12 +49,20 @@ const VideoChat = ({ state, self, peers }) => {
     <Paper className={classes.paper}>
       {peers.map((peer, key) => {
         if (peer.id === self.id) {
+          console.log(
+            "Sending this stream-----------",
+            peer.sendingStream && peer.sendingStream.getTracks()
+          );
           return (
             <div key={key} className={classes.selfStream}>
               <Video stream={peer.sendingStream} isMine={true} peer={peer} />
             </div>
           );
         } else {
+          console.log(
+            "Sending this stream to others-----------",
+            peer.sendingStream && peer.sendingStream.getTracks()
+          );
           return (
             <div key={key} className={classes.otherStream}>
               {console.log(

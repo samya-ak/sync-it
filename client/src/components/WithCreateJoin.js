@@ -10,20 +10,24 @@ const withCreateJoin = (WrappedComponent) => {
     const [state, dispatch] = useContext(Context);
     const myStream = useRef();
     let history = useHistory();
-    const [hasStream, setHasStream] = useState(false);
+    const hasStream = useRef(false);
 
     useEffect(() => {
-      console.log("Use effect inside withcreatejoin>>>");
-      navigator.mediaDevices
-        .getUserMedia({ audio: true, video: true })
-        .then((stream) => {
-          myStream.current = stream;
-          setHasStream(true);
-        })
-        .catch((err) => {
-          myStream.current = null;
-          showError("Media device not found or not allowed.");
-        });
+      if (!hasStream.current) {
+        navigator.mediaDevices
+          .getUserMedia({ audio: true, video: true })
+          .then((stream) => {
+            if (myStream.current == null) {
+              console.log("myStream init in useEffect ------------");
+              myStream.current = stream;
+              hasStream.current = true;
+            }
+          })
+          .catch((err) => {
+            myStream.current = null;
+            showError("Media device not found or not allowed.");
+          });
+      }
     }, []);
 
     const createRoom = (e) => {
@@ -87,23 +91,25 @@ const withCreateJoin = (WrappedComponent) => {
     };
 
     const handleJoin = async (roomId) => {
-      console.log("handle Join----------");
-      if (!hasStream) {
+      if (!hasStream.current) {
         try {
           //when room is accessed directly from url, there is no stream so
-
           const stream = await navigator.mediaDevices.getUserMedia({
             audio: true,
             video: true,
           });
 
-          myStream.current = stream;
-          setHasStream(true);
+          if (myStream.current == null) {
+            console.log("myStream init in handle join ------------");
+            myStream.current = stream;
+            hasStream.current = true;
+          }
         } catch (err) {
           myStream.current = null;
           showError("Media device not found or not allowed.");
         }
       }
+
       const socket = io();
 
       console.log("mystream>>>>", myStream.current);
