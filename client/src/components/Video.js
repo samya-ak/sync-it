@@ -41,18 +41,25 @@ const useStyles = makeStyles((theme) => ({
 const Video = ({ stream, isMine, peer }) => {
   const streamRef = useRef();
   const classes = useStyles();
-  const [isMicOn, setIsMicOn] = useState(stream !== null);
-  const [isVideoOn, setIsVideoOn] = useState(stream !== null);
+  console.log("peer inside video--------->", peer);
+  const [isMicOn, setIsMicOn] = useState(
+    peer.isMicOn == null ? stream !== null : peer.isMicOn
+  );
+  const [isVideoOn, setIsVideoOn] = useState(
+    peer.isVideoOn == null ? stream !== null : peer.isVideoOn
+  );
   const isMicOnRef = useRef(isMicOn);
   const isVideoOnRef = useRef(isVideoOn);
   const theme = useTheme();
 
   const _setIsMicOn = (val) => {
+    peer.isMicOn = val;
     isMicOnRef.current = val;
     setIsMicOn(val);
   };
 
   const _setIsVideoOn = (val) => {
+    peer.isVideoOn = val;
     isVideoOnRef.current = val;
     setIsVideoOn(val);
   };

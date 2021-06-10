@@ -10,6 +10,8 @@ export default class Peer {
     this._username = "Anonymous";
     this._sendingStream = sendingStream;
     this._receivingStream = null;
+    this._isMicOn = null;
+    this._isVideoOn = null;
 
     this._socket.on("offer", this.handleReceiveCall.bind(this));
 
@@ -73,6 +75,22 @@ export default class Peer {
 
   set name(name) {
     this._username = name;
+  }
+
+  set isMicOn(status) {
+    this._isMicOn = status;
+  }
+
+  get isMicOn() {
+    return this._isMicOn;
+  }
+
+  set isVideoOn(status) {
+    this._isVideoOn = status;
+  }
+
+  get isVideoOn() {
+    return this._isVideoOn;
   }
 
   call() {
