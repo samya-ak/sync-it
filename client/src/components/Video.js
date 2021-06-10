@@ -134,6 +134,7 @@ const Video = ({ stream, isMine, peer }) => {
         if (payload.from === peer.id) {
           _setIsVideoOn(payload.isVideoOn);
           _setIsMicOn(payload.isMicOn);
+          peer.name = payload.username;
         }
       });
 
@@ -151,6 +152,7 @@ const Video = ({ stream, isMine, peer }) => {
         const status = {
           id: e.detail,
           from: peer.id,
+          username: peer.name,
           isMicOn: isMicOnRef.current,
           isVideoOn: isVideoOnRef.current,
         };

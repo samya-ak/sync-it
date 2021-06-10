@@ -79,6 +79,7 @@ const Room = ({ handleJoin }) => {
 
   const sendUsername = (e) => {
     if (e.charCode === 13) {
+      self.name = username;
       for (let [key, value] of state.room.peers) {
         if (key !== self.id) {
           console.log("sending username to>>>", value);
