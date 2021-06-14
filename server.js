@@ -60,6 +60,11 @@ io.on("connection", (socket) => {
       const room = rooms.get(roomId);
       let otherPeers = [];
 
+      if (room && room.size === 4) {
+        socket.emit("room-full");
+        return;
+      }
+
       if (rooms.has(roomId)) {
         room.forEach((peer) => {
           otherPeers.push(peer);
@@ -227,7 +232,6 @@ io.on("connection", (socket) => {
     console.log("room after adding stream >>>>", broadcastingRooms.get(room));
   }
 
-  //TODO: need to handle part when a broadcaster is streaming and in the middle, a consumer joins the room
   app.post("/consume", async ({ body }, res) => {
     try {
       console.log("consuming", body);

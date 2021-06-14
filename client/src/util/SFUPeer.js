@@ -1,3 +1,4 @@
+import adapter from "webrtc-adapter";
 class SFUPeer {
   constructor(isBroadcaster, videoStream, self) {
     this._isBroadcaster = isBroadcaster;

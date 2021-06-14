@@ -1,6 +1,7 @@
 import io from "socket.io-client";
 import Room from "../util/Room";
 import Peer from "../util/Peer";
+import adapter from "webrtc-adapter";
 import { Context } from "../components/Store";
 import { useContext, useRef, useEffect, useState } from "react";
 import { useHistory } from "react-router-dom";
@@ -111,6 +112,11 @@ const withCreateJoin = (WrappedComponent) => {
       }
 
       const socket = io();
+      socket.on("room-full", () => {
+        history.push("/");
+        showError("Room is full.");
+        return;
+      });
 
       console.log("mystream>>>>", myStream.current);
 

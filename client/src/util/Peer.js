@@ -1,3 +1,5 @@
+import adapter from "webrtc-adapter";
+
 export default class Peer {
   constructor(id, roomId, socket, dispatch, sendingStream) {
     this._id = id;
