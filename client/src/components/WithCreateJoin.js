@@ -3,7 +3,7 @@ import Room from "../util/Room";
 import Peer from "../util/Peer";
 import adapter from "webrtc-adapter";
 import { Context } from "../components/Store";
-import { useContext, useRef, useEffect, useState } from "react";
+import { useContext, useRef, useEffect } from "react";
 import { useHistory } from "react-router-dom";
 
 const withCreateJoin = (WrappedComponent) => {
@@ -56,7 +56,7 @@ const withCreateJoin = (WrappedComponent) => {
         console.log("you>>>jr", socket.id);
       });
 
-      dispatch({ type: "ADD_ROOM", payload: room });
+      dispatch({ type: "UPDATE_ROOM", payload: room });
     };
 
     const newPeerListener = (socket, room) => {
@@ -75,7 +75,7 @@ const withCreateJoin = (WrappedComponent) => {
         const sendStatus = new CustomEvent("sendStatus", { detail: socketId });
         document.dispatchEvent(sendStatus);
 
-        dispatch({ type: "ADD_ROOM", payload: room });
+        dispatch({ type: "UPDATE_ROOM", payload: room });
       });
     };
 
@@ -83,7 +83,7 @@ const withCreateJoin = (WrappedComponent) => {
       socket.on("disconnected", (peerId) => {
         //remove peer from room - client
         room.peers.delete(peerId);
-        dispatch({ type: "ADD_ROOM", payload: room });
+        dispatch({ type: "UPDATE_ROOM", payload: room });
       });
     };
 
@@ -142,7 +142,7 @@ const withCreateJoin = (WrappedComponent) => {
           room.peers = otherPeer;
           otherPeer.call();
         });
-        dispatch({ type: "ADD_ROOM", payload: room });
+        dispatch({ type: "UPDATE_ROOM", payload: room });
       });
 
       newPeerListener(socket, room);

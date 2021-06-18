@@ -16,7 +16,7 @@ const Reducer = (state, action) => {
         },
       };
 
-    case "ADD_ROOM":
+    case "UPDATE_ROOM":
       return {
         ...state,
         room: action.payload,

@@ -2,7 +2,6 @@ import { createContext, useReducer } from "react";
 import Reducer from "./Reducer";
 
 const initialState = {
-  error: null,
   room: null,
   self: null,
   username: "Anonymous",
