@@ -72,11 +72,11 @@ class SFUPeer {
   handleNegotiationNeededEvent = async () => {
     console.log("inside handleNegotiationNeededEvent");
     const offer = await this._sfuPeer.createOffer();
-    await this._sfuPeer.setLocalDescription(offer);
     const payload = {
       id: this._self.id,
       room: this._self.room,
-      sdp: this._sfuPeer.localDescription,
+      // sdp: this._sfuPeer.localDescription,
+      sdp: offer,
       username: this._self.name,
     };
 
@@ -110,6 +110,7 @@ class SFUPeer {
         "Response for broadcasting or consuming-----------",
         response
       );
+      await this._sfuPeer.setLocalDescription(offer);
       const desc = new RTCSessionDescription(response.sdp);
       this._sfuPeer.setRemoteDescription(desc).catch((e) => console.log(e));
     } catch (e) {
