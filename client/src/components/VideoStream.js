@@ -88,7 +88,10 @@ const VideoStream = ({ self }) => {
         console.log("Init Stream>>>>", e.detail);
         setHasStream(true);
         const target = document.getElementById("video-stream");
-        target.srcObject = e.detail;
+        console.log("has video target??", target);
+        if (target) {
+          target.srcObject = e.detail;
+        }
       });
 
       return () => {

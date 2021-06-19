@@ -10,13 +10,13 @@ class SFUPeer {
         {
           urls: "stun:stun.stunprotocol.org",
         },
-        {
-          urls: "turn:numb.viagenie.ca",
-          credential: "muazkh",
-          username: "webrtc@live.com",
-        },
       ],
     });
+    // {
+    //   urls: "turn:numb.viagenie.ca",
+    //   credential: "muazkh",
+    //   username: "webrtc@live.com",
+    // },
 
     console.log("creating sfu peer-------");
     self.socket.on("sfu-ice-candidate", this.handleSfuIceCandidate.bind(this));
@@ -58,6 +58,10 @@ class SFUPeer {
   }
 
   handleSfuIceCandidate = (incoming) => {
+    console.log(
+      "got this ice candidate for video streaming from server>>>>>",
+      incoming
+    );
     const candidate = new RTCIceCandidate(incoming.candidate);
     if (this._sfuPeer.signalingState !== "closed") {
       this._sfuPeer.addIceCandidate(candidate).catch((e) => console.log(e));

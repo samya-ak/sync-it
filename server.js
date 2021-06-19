@@ -46,7 +46,7 @@ const broadcastingRooms = new Map();
 
 io.on("connection", (socket) => {
   socket.on("error", (error) => {
-    console.log(error);
+    console.log("Error occured in server: ", error);
   });
   //signaling
   socket.on("create room", (roomId) => {
@@ -147,31 +147,34 @@ io.on("connection", (socket) => {
       {
         urls: "stun:stun.stunprotocol.org",
       },
-      {
-        urls: "turn:numb.viagenie.ca",
-        credential: "muazkh",
-        username: "webrtc@live.com",
-      },
+      // {
+      //   urls: "turn:numb.viagenie.ca",
+      //   credential: "muazkh",
+      //   username: "webrtc@live.com",
+      // },
     ],
   };
 
   app.post("/ice", async ({ body }, res) => {
     try {
-      console.log("inside ice candidate>>>>", body);
+      console.log("Broadcasting rooms", broadcastingRooms);
+      console.log("got ice candidate from client>>>>", body.candidate);
       if (broadcastingRooms.has(body.room)) {
         const room = broadcastingRooms.get(body.room);
-        console.log("Room>>>", room);
+        // console.log("Room>>>", room);
         const peer = room.get(body.id);
         const candidate = new webrtc.RTCIceCandidate(body.candidate);
-        console.log("Peer>>", peer);
-        peer.addIceCandidate(candidate).catch((e) => console.log(e));
+        // console.log("Peer>>", peer);
+        peer
+          .addIceCandidate(candidate)
+          .catch((e) => console.log("ICE ERROR: ", e));
 
         res.json({ candidate });
       } else {
         res.status(400).send(`No room ${body.room} in broadcasting room.`);
       }
     } catch (e) {
-      console.log(e);
+      console.log("Internal server Error: ", e);
       res.status(500).send(e);
     }
   });
@@ -189,7 +192,7 @@ io.on("connection", (socket) => {
   app.post("/broadcast", async ({ body }, res) => {
     const peer = new webrtc.RTCPeerConnection(ice);
 
-    console.log("Broadcasting to room: ", body);
+    console.log("Broadcasting to room>>>>: ", body);
     if (!broadcastingRooms.has(body.room)) {
       const room = new Map();
       room.set(body.id, peer);
@@ -218,6 +221,7 @@ io.on("connection", (socket) => {
     const sockets = await io.in(socketId).fetchSockets();
     const candidate = e.candidate;
     if (e.candidate) {
+      console.log("sending ice candidate to client", candidate, sockets[0].id);
       sockets[0].emit("sfu-ice-candidate", { candidate });
     }
   }
