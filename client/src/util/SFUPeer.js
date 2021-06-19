@@ -5,6 +5,7 @@ class SFUPeer {
     this._stream = videoStream;
     this._self = self;
     this._addedTracks = [];
+    this._candidateQueue = [];
     this._sfuPeer = new RTCPeerConnection({
       iceServers: [
         {
@@ -64,7 +65,17 @@ class SFUPeer {
     );
     const candidate = new RTCIceCandidate(incoming.candidate);
     if (this._sfuPeer.signalingState !== "closed") {
-      this._sfuPeer.addIceCandidate(candidate).catch((e) => console.log(e));
+      console.log(
+        "Remote description-------->",
+        this._sfuPeer.remoteDescription
+      );
+      if (this._sfuPeer.remoteDescription) {
+        this._sfuPeer.addIceCandidate(candidate).catch((e) => {
+          console.error(e);
+        });
+      } else {
+        this._candidateQueue.push(candidate);
+      }
     }
     console.log("Sfu ice candidate added>>>>>");
   };
@@ -72,6 +83,7 @@ class SFUPeer {
   handleNegotiationNeededEvent = async () => {
     console.log("inside handleNegotiationNeededEvent");
     const offer = await this._sfuPeer.createOffer();
+
     const payload = {
       id: this._self.id,
       room: this._self.room,
@@ -113,8 +125,20 @@ class SFUPeer {
       await this._sfuPeer.setLocalDescription(offer);
       const desc = new RTCSessionDescription(response.sdp);
       this._sfuPeer.setRemoteDescription(desc).catch((e) => console.log(e));
+      this._candidateQueue.length &&
+        this.addCandidatefromQueue(this._candidateQueue.shift());
     } catch (e) {
       console.error("Error in consuming stream: ", e);
+    }
+  };
+
+  addCandidatefromQueue = (candidate) => {
+    console.log("running recursion to add candidate------", candidate);
+    this._sfuPeer.addIceCandidate(candidate).catch((e) => {
+      console.error(e);
+    });
+    if (this._candidateQueue.length) {
+      this.addCandidatefromQueue(this._candidateQueue.shift());
     }
   };
 
