@@ -136,7 +136,7 @@ io.on("connection", (socket) => {
     }
 
     const sockets = await io.in(roomId).fetchSockets();
-    console.log("Sockets in room: ---", sockets);
+    console.log("Sockets in room: ---", sockets.length);
     for (const socket of sockets) {
       console.log("Queue Candidates----->", queueCandidates);
       queueCandidates.has(socket.id) && queueCandidates.delete(socket.id);
@@ -166,8 +166,8 @@ io.on("connection", (socket) => {
 
   app.post("/ice", async ({ body }, res) => {
     try {
-      console.log("Ice got hit | Broadcasting rooms", broadcastingRooms);
-      console.log("got ice candidate from client>>>>", body);
+      console.log("Ice got hit | Broadcasting rooms");
+      console.log("got ice candidate from client>>>>");
       if (broadcastingRooms.has(body.room)) {
         const room = broadcastingRooms.get(body.room);
         // console.log("Room>>>", room);
@@ -179,24 +179,24 @@ io.on("connection", (socket) => {
             .addIceCandidate(candidate)
             .catch((e) => console.log("ICE ERROR: ", e));
         } else {
-          if (peerCandiddates.has(body.id)) {
+          if (queueCandidates.has(body.id)) {
             console.log("adding to candidate queue---------");
-            peerCandiddates.get(body.id).push(candidate);
+            queueCandidates.get(body.id).push(candidate);
           } else {
             console.log("adding to candidate queue---------");
-            peerCandiddates.set(body.id, [candidate]);
+            queueCandidates.set(body.id, [candidate]);
           }
         }
 
         res.json({ candidate });
       } else {
         const candidate = new webrtc.RTCIceCandidate(body.candidate);
-        if (peerCandiddates.has(body.id)) {
+        if (queueCandidates.has(body.id)) {
           console.log("adding to candidate queue 400---------");
-          peerCandiddates.get(body.id).push(candidate);
+          queueCandidates.get(body.id).push(candidate);
         } else {
           console.log("adding to candidate queue 400---------");
-          peerCandiddates.set(body.id, [candidate]);
+          queueCandidates.set(body.id, [candidate]);
         }
         res.status(400).send(`No room ${body.room} in broadcasting room.`);
       }
@@ -264,7 +264,7 @@ io.on("connection", (socket) => {
   }
 
   function handleTrackEvent(e, room) {
-    console.log("Broadcasting to room------->", room);
+    console.log("Broadcasting to room------->", e.streams[0].getTracks());
     if (broadcastingRooms.has(room)) {
       broadcastingRooms.get(room).set("stream", e.streams[0]);
     } else {
@@ -275,7 +275,7 @@ io.on("connection", (socket) => {
 
   app.post("/consume", async ({ body }, res) => {
     try {
-      console.log("consuming got hit", body);
+      console.log("consuming got hit");
       const peer = new webrtc.RTCPeerConnection(ice);
       peer.onicecandidate = (e) => handleIceCandidate(e, body.id);
 
@@ -295,7 +295,7 @@ io.on("connection", (socket) => {
 
       if (broadcastingRooms.has(body.room)) {
         const room = broadcastingRooms.get(body.room);
-        console.log("This is the room>>>", room);
+        console.log("This is the room>>>");
         room
           .get("stream")
           .getTracks()

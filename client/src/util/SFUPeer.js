@@ -158,11 +158,11 @@ class SFUPeer {
         },
         body: JSON.stringify(payload),
       })
-        .then((response) => {
-          return response.json();
-        })
+        // .then((response) => {
+        //   return response.json();
+        // })
         .catch((err) => {
-          console.error("Error: ", err);
+          console.error("ICE Error: ", err);
         });
       console.log("ice candidate emitting for video streaming...", e, response);
     }
