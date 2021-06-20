@@ -162,7 +162,7 @@ io.on("connection", (socket) => {
       //   username: "webrtc@live.com",
       // },
       {
-        urls: "turn: turn:20.198.73.72:3478",
+        urls: "turn:20.198.73.72:3478",
         credential: "tu@nsync-it",
         username: "samyak",
       },
