@@ -157,9 +157,13 @@ class SFUPeer {
           "Content-Type": "application/json",
         },
         body: JSON.stringify(payload),
-      }).then((response) => {
-        return response.json();
-      });
+      })
+        .then((response) => {
+          return response.json();
+        })
+        .catch((err) => {
+          console.error("Error: ", err);
+        });
       console.log("ice candidate emitting for video streaming...", e, response);
     }
   };

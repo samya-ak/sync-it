@@ -180,14 +180,24 @@ io.on("connection", (socket) => {
             .catch((e) => console.log("ICE ERROR: ", e));
         } else {
           if (peerCandiddates.has(body.id)) {
+            console.log("adding to candidate queue---------");
             peerCandiddates.get(body.id).push(candidate);
           } else {
+            console.log("adding to candidate queue---------");
             peerCandiddates.set(body.id, [candidate]);
           }
         }
 
         res.json({ candidate });
       } else {
+        const candidate = new webrtc.RTCIceCandidate(body.candidate);
+        if (peerCandiddates.has(body.id)) {
+          console.log("adding to candidate queue 400---------");
+          peerCandiddates.get(body.id).push(candidate);
+        } else {
+          console.log("adding to candidate queue 400---------");
+          peerCandiddates.set(body.id, [candidate]);
+        }
         res.status(400).send(`No room ${body.room} in broadcasting room.`);
       }
     } catch (e) {
