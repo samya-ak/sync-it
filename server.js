@@ -43,6 +43,7 @@ const io = socket(server);
 
 //track broadcasting rooms
 const broadcastingRooms = new Map();
+const queueCandidates = new Map();
 
 io.on("connection", (socket) => {
   socket.on("error", (error) => {
@@ -129,10 +130,18 @@ io.on("connection", (socket) => {
     }
   });
 
-  socket.on("stop streaming", (roomId) => {
+  socket.on("stop streaming", async (roomId) => {
     if (broadcastingRooms.has(roomId)) {
       broadcastingRooms.delete(roomId);
     }
+
+    const sockets = await io.in(roomId).fetchSockets();
+    console.log("Sockets in room: ---", sockets);
+    for (const socket of sockets) {
+      console.log("Queue Candidates----->", queueCandidates);
+      queueCandidates.has(socket.id) && queueCandidates.delete(socket.id);
+    }
+
     socket.to(roomId).emit("streaming stopped");
   });
 });
@@ -165,9 +174,17 @@ io.on("connection", (socket) => {
         const peer = room.get(body.id);
         const candidate = new webrtc.RTCIceCandidate(body.candidate);
         // console.log("Peer>>", peer);
-        peer
-          .addIceCandidate(candidate)
-          .catch((e) => console.log("ICE ERROR: ", e));
+        if (peer) {
+          peer
+            .addIceCandidate(candidate)
+            .catch((e) => console.log("ICE ERROR: ", e));
+        } else {
+          if (peerCandiddates.has(body.id)) {
+            peerCandiddates.get(body.id).push(candidate);
+          } else {
+            peerCandiddates.set(body.id, [candidate]);
+          }
+        }
 
         res.json({ candidate });
       } else {
@@ -208,6 +225,16 @@ io.on("connection", (socket) => {
     peer.ontrack = (e) => handleTrackEvent(e, body.room);
     const desc = new webrtc.RTCSessionDescription(body.sdp);
     await peer.setRemoteDescription(desc);
+    if (queueCandidates.has(body.id) && queueCandidates.get(body.id).length) {
+      const candidates = queueCandidates.get(body.id);
+      candidates.forEach((candidate) => {
+        console.log("add ice from queue --- broadcast");
+        peer
+          .addIceCandidate(candidate)
+          .catch((e) => console.log("ICE ERROR: ", e));
+        candidates.shift();
+      });
+    }
     const answer = await peer.createAnswer();
     await peer.setLocalDescription(answer);
     const payload = {
@@ -245,6 +272,16 @@ io.on("connection", (socket) => {
       const desc = new webrtc.RTCSessionDescription(body.sdp);
 
       await peer.setRemoteDescription(desc);
+      if (queueCandidates.has(body.id) && queueCandidates.get(body.id).length) {
+        const candidates = queueCandidates.get(body.id);
+        candidates.forEach((candidate) => {
+          console.log("add ice from queue --- broadcast");
+          peer
+            .addIceCandidate(candidate)
+            .catch((e) => console.log("ICE ERROR: ", e));
+          candidates.shift();
+        });
+      }
 
       if (broadcastingRooms.has(body.room)) {
         const room = broadcastingRooms.get(body.room);
