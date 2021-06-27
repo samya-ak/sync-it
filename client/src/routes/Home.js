@@ -13,6 +13,7 @@ import {
 import MeetingRoomIcon from "@material-ui/icons/MeetingRoom";
 import KeyboardIcon from "@material-ui/icons/Keyboard";
 import withCreateJoin from "../components/WithCreateJoin";
+import CircularProgress from "@material-ui/core/CircularProgress";
 
 const useStyles = makeStyles((theme) => ({
   container: {
@@ -61,7 +62,7 @@ const borderInput = makeStyles(() => ({
   notchedOutline: {},
 }));
 
-const Home = ({ createRoom, handleJoin }) => {
+const Home = ({ createRoom, handleJoin, streamResolved }) => {
   const [roomId, setRoomId] = useState("");
   const classes = useStyles();
   const changeBorderColor = borderInput();
@@ -102,10 +103,16 @@ const Home = ({ createRoom, handleJoin }) => {
               <Button
                 variant="contained"
                 color="primary"
-                startIcon={<MeetingRoomIcon />}
+                startIcon={
+                  streamResolved ? (
+                    <MeetingRoomIcon />
+                  ) : (
+                    <CircularProgress size="1rem" style={{ color: "#fff" }} />
+                  )
+                }
                 className={classes.create}
                 style={{ background: "#0F9D58" }}
-                onClick={createRoom}
+                onClick={streamResolved ? createRoom : undefined}
               >
                 Create Room
               </Button>
@@ -126,7 +133,12 @@ const Home = ({ createRoom, handleJoin }) => {
                 <Button
                   className={classes.join}
                   variant="text"
-                  onClick={(e) => handleJoin(roomId)}
+                  endIcon={
+                    streamResolved ? "" : <CircularProgress size="1rem" />
+                  }
+                  onClick={
+                    streamResolved ? (e) => handleJoin(roomId) : undefined
+                  }
                 >
                   Join
                 </Button>

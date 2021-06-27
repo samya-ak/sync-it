@@ -156,6 +156,14 @@ const Room = ({ handleJoin }) => {
               </Toolbar>
             </AppBar>
             <VideoStream self={self} />
+            <div style={{ padding: "20px" }}>
+              <h5>Note:</h5>
+              <p>
+                If the local video streaming is not working, you may need to
+                disable your chromium based browser's 'hardware accelaration'
+                from system settings due to bug in captureStream api.
+              </p>
+            </div>
           </Paper>
         </Grid>
 

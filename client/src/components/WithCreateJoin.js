@@ -3,7 +3,7 @@ import Room from "../util/Room";
 import Peer from "../util/Peer";
 import adapter from "webrtc-adapter";
 import { Context } from "../components/Store";
-import { useContext, useRef, useEffect } from "react";
+import { useContext, useRef, useEffect, useState } from "react";
 import { useHistory } from "react-router-dom";
 
 const withCreateJoin = (WrappedComponent) => {
@@ -12,6 +12,7 @@ const withCreateJoin = (WrappedComponent) => {
     const myStream = useRef();
     let history = useHistory();
     const hasStream = useRef(false);
+    const [streamResolved, setStreamResolved] = useState(false);
 
     useEffect(() => {
       if (!hasStream.current) {
@@ -23,9 +24,11 @@ const withCreateJoin = (WrappedComponent) => {
               myStream.current = stream;
               hasStream.current = true;
             }
+            setStreamResolved(true);
           })
           .catch((err) => {
             myStream.current = null;
+            setStreamResolved(true);
             showError("Media device not found or not allowed.");
           });
       }
@@ -74,8 +77,10 @@ const withCreateJoin = (WrappedComponent) => {
         //dispatch an event to send your mic and webcam status
         const sendStatus = new CustomEvent("sendStatus", { detail: socketId });
         document.dispatchEvent(sendStatus);
-
-        dispatch({ type: "UPDATE_ROOM", payload: room });
+        setTimeout(
+          () => dispatch({ type: "UPDATE_ROOM", payload: room }),
+          2000
+        );
       });
     };
 
@@ -166,6 +171,7 @@ const withCreateJoin = (WrappedComponent) => {
       <WrappedComponent
         createRoom={createRoom}
         handleJoin={handleJoin}
+        streamResolved={streamResolved}
         {...props}
       />
     );

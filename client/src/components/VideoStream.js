@@ -45,8 +45,6 @@ const VideoStream = ({ self }) => {
       // self.socket.emit("broadcasting", { room: self.room });
     } else {
       console.log("has sfupeer-------", stream);
-      //there's already a webrtc connection, but wanna stream another video file
-      // sfuPeerRef.current.stream = stream;
     }
   };
 
@@ -106,6 +104,7 @@ const VideoStream = ({ self }) => {
       <input
         id="stream-video-file"
         type="file"
+        accept="video/*, audio/*"
         style={{ display: "none" }}
         onChange={(e) => {
           setHasStream(true);
@@ -130,13 +129,23 @@ const VideoStream = ({ self }) => {
           <div id="video-stream-container" style={{ width: "inherit" }}></div>
         </div>
       ) : (
-        <div style={{ width: "inherit" }}>
-          <video
-            id="video-stream"
-            style={{ width: "inherit", maxHeight: "inherit" }}
-            src={videoUrl}
-            controls
-          ></video>
+        <div>
+          <div
+            style={{
+              height: "45vh",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              backgroundColor: "black",
+            }}
+          >
+            <video
+              id="video-stream"
+              style={{ width: "auto", height: "100%" }}
+              src={videoUrl}
+              controls
+            ></video>
+          </div>
           {videoUrl && (
             <Button
               variant="contained"
