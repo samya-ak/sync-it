@@ -1,10 +1,11 @@
 import { useState, useEffect, useRef } from "react";
 import SFUPeer from "../util/SFUPeer";
-import { makeStyles } from "@material-ui/core/styles";
+import { makeStyles, useTheme } from "@material-ui/core/styles";
 import OndemandVideoIcon from "@material-ui/icons/OndemandVideo";
 import { Typography } from "@material-ui/core";
 import Button from "@material-ui/core/Button";
 import StopIcon from "@material-ui/icons/Stop";
+import useMediaQuery from "@material-ui/core/useMediaQuery";
 
 const useStyles = makeStyles((theme) => ({
   chooseFile: {
@@ -20,6 +21,25 @@ const useStyles = makeStyles((theme) => ({
       height: "inherit",
     },
   },
+  desktopVideo: {
+    width: "auto",
+    height: "100%",
+  },
+  mobileVideo: {
+    width: "100%",
+    height: "inherit",
+  },
+  desktopVideo2: {
+    height: "45vh",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: "black",
+  },
+  mobileVideo2: {
+    height: "inherit",
+    backgroundColor: "black",
+  },
 }));
 
 const VideoStream = ({ self }) => {
@@ -27,6 +47,8 @@ const VideoStream = ({ self }) => {
   const [hasStream, setHasStream] = useState(false);
   const sfuPeerRef = useRef(null);
   const classes = useStyles();
+  const theme = useTheme();
+  const matches = useMediaQuery(theme.breakpoints.up("md"));
 
   useEffect(() => {
     if (videoUrl) {
@@ -129,19 +151,13 @@ const VideoStream = ({ self }) => {
           <div id="video-stream-container" style={{ width: "inherit" }}></div>
         </div>
       ) : (
-        <div>
+        <div className={!matches && classes.selectorMobileHeight}>
           <div
-            style={{
-              height: "45vh",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              backgroundColor: "black",
-            }}
+            className={matches ? classes.desktopVideo2 : classes.mobileVideo2}
           >
             <video
               id="video-stream"
-              style={{ width: "auto", height: "100%" }}
+              className={matches ? classes.desktopVideo : classes.mobileVideo}
               src={videoUrl}
               controls
             ></video>
