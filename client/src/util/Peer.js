@@ -110,10 +110,15 @@ export default class Peer {
         {
           urls: "stun:stun.stunprotocol.org",
         },
+        // {
+        //   urls: "turn:numb.viagenie.ca",
+        //   credential: "muazkh",
+        //   username: "webrtc@live.com",
+        // },
         {
-          urls: "turn:numb.viagenie.ca",
-          credential: "muazkh",
-          username: "webrtc@live.com",
+          urls: "turn:20.198.73.72:3478",
+          credential: "tu@nsync-it",
+          username: "samyak",
         },
       ],
     });
