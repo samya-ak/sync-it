@@ -5,10 +5,11 @@ import CardContent from "@material-ui/core/CardContent";
 import IconButton from "@material-ui/core/IconButton";
 import SendRoundedIcon from "@material-ui/icons/SendRounded";
 import { makeStyles } from "@material-ui/core/styles";
-import { useState, useContext } from "react";
+import { useState, useContext, useEffect } from "react";
 import { Context } from "../components/Store";
 import useMediaQuery from "@material-ui/core/useMediaQuery";
 import { useTheme } from "@material-ui/core/styles";
+import CircularProgress from "@material-ui/core/CircularProgress";
 
 const useStyles = makeStyles((theme) => ({
   paper: {
@@ -82,9 +83,23 @@ const useStyles = makeStyles((theme) => ({
 const Chat = ({ self }) => {
   const classes = useStyles();
   const [msg, setMsg] = useState("");
+  const [channelOpened, setChannelOpened] = useState(false);
   const [state, dispatch] = useContext(Context);
   const theme = useTheme();
   const matches = useMediaQuery(theme.breakpoints.up("md"));
+
+  useEffect(() => {
+    let isMounted = true;
+
+    const listener = document.addEventListener("channelOpened", () => {
+      if (isMounted) setChannelOpened(true);
+    });
+
+    return () => {
+      document.removeEventListener("channelOpened", listener);
+      isMounted = false;
+    };
+  }, []);
 
   const handleSubmit = (e) => {
     if (msg.length > 0) {
@@ -156,14 +171,25 @@ const Chat = ({ self }) => {
           onChange={(e) => setMsg(e.target.value)}
         />
 
-        <IconButton
-          aria-label="send message"
-          component="span"
-          onClick={handleSubmit}
-          className={classes.sendMessage}
-        >
-          <SendRoundedIcon />
-        </IconButton>
+        {channelOpened ? (
+          <IconButton
+            aria-label="send message"
+            component="span"
+            onClick={handleSubmit}
+            className={classes.sendMessage}
+          >
+            <SendRoundedIcon />
+          </IconButton>
+        ) : (
+          <IconButton
+            aria-label="send message"
+            component="span"
+            className={classes.sendMessage}
+            style={{ pointerEvents: "none" }}
+          >
+            <CircularProgress size="1rem" style={{ color: "#fff" }} />
+          </IconButton>
+        )}
       </div>
     </Paper>
   );

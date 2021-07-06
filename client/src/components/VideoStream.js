@@ -76,6 +76,7 @@ const VideoStream = ({ self }) => {
     self.socket.emit("stop streaming", self.room);
     setVideoUrl("");
     setHasStream(false);
+    document.getElementById("stream-video-file").value = "";
   };
 
   useEffect(() => {
@@ -151,7 +152,7 @@ const VideoStream = ({ self }) => {
           <div id="video-stream-container" style={{ width: "inherit" }}></div>
         </div>
       ) : (
-        <div className={!matches && classes.selectorMobileHeight}>
+        <div className={!matches ? classes.selectorMobileHeight : ""}>
           <div
             className={matches ? classes.desktopVideo2 : classes.mobileVideo2}
           >

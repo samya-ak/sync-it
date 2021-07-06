@@ -133,6 +133,8 @@ export default class Peer {
 
       this._dataChannel.onopen = () => {
         console.log("Caller datachannel opened", this);
+        const channelOpened = new Event("channelOpened");
+        document.dispatchEvent(channelOpened);
       };
 
       this._dataChannel.onclose = () => {
@@ -143,6 +145,8 @@ export default class Peer {
       peer.ondatachannel = (e) => {
         console.log("datachannel opened>>>", this);
         this._receiveChannel = e.channel;
+        const channelOpened = new Event("channelOpened");
+        document.dispatchEvent(channelOpened);
         this._receiveChannel.onmessage = (e) => this.handleMessageReceived(e);
         console.log("receive channel created>>>>", this);
       };
@@ -161,6 +165,7 @@ export default class Peer {
   }
 
   handleICECandidateEvent(e) {
+    console.log("handle ice candidate-----", e.candidate);
     if (e.candidate) {
       const payload = {
         target: this._id,
@@ -173,9 +178,11 @@ export default class Peer {
   }
 
   handleNegotiationNeededEvent(peer) {
+    console.log("inside handleNegotiation needed -------");
     this._rtcPeer
       .createOffer()
       .then((offer) => {
+        console.log("Set local description ------");
         return this._rtcPeer.setLocalDescription(offer);
       })
       .then(() => {
