@@ -12,6 +12,7 @@ const initialState = {
     severity: null,
     message: null,
   },
+  sfuPeer: null,
 };
 
 const Store = ({ children }) => {

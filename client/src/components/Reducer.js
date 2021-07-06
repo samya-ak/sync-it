@@ -47,6 +47,12 @@ const Reducer = (state, action) => {
         refresh: state.refresh + action.payload,
       };
 
+    case "UPDATE_SFUPEER":
+      return {
+        ...state,
+        sfuPeer: action.payload,
+      };
+
     case "RESET":
       return {
         error: null,
@@ -60,6 +66,7 @@ const Reducer = (state, action) => {
           severity: null,
           message: null,
         },
+        sfuPeer: null,
       };
 
     default:

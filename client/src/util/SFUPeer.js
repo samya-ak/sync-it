@@ -59,6 +59,10 @@ class SFUPeer {
     this._sfuPeer.close();
   }
 
+  get isBroadcaster() {
+    return this._isBroadcaster;
+  }
+
   set stream(videoStream) {
     this._stream = videoStream;
   }

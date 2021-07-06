@@ -1,5 +1,6 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useContext } from "react";
 import SFUPeer from "../util/SFUPeer";
+import { Context } from "../components/Store";
 import { makeStyles, useTheme } from "@material-ui/core/styles";
 import OndemandVideoIcon from "@material-ui/icons/OndemandVideo";
 import { Typography } from "@material-ui/core";
@@ -45,6 +46,7 @@ const useStyles = makeStyles((theme) => ({
 const VideoStream = ({ self }) => {
   const [videoUrl, setVideoUrl] = useState(null);
   const [hasStream, setHasStream] = useState(false);
+  const [state, dispatch] = useContext(Context);
   const sfuPeerRef = useRef(null);
   const classes = useStyles();
   const theme = useTheme();
@@ -64,7 +66,7 @@ const VideoStream = ({ self }) => {
       //when new stream needs to be created - you are streaming
       console.log("no sfupeer--------", stream);
       sfuPeerRef.current = new SFUPeer(true, stream, self);
-      // self.socket.emit("broadcasting", { room: self.room });
+      dispatch({ type: "UPDATE_SFUPEER", payload: sfuPeerRef.current });
     } else {
       console.log("has sfupeer-------", stream);
     }
@@ -77,6 +79,7 @@ const VideoStream = ({ self }) => {
     setVideoUrl("");
     setHasStream(false);
     document.getElementById("stream-video-file").value = "";
+    dispatch({ type: "UPDATE_SFUPEER", payload: null });
   };
 
   useEffect(() => {
@@ -101,6 +104,7 @@ const VideoStream = ({ self }) => {
         console.log("streaming stopped", self);
         sfuPeerRef.current && sfuPeerRef.current.closeConnection();
         sfuPeerRef.current = null;
+        dispatch({ type: "UPDATE_SFUPEER", payload: null });
         setHasStream(false);
       });
 

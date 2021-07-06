@@ -119,6 +119,8 @@ const Room = ({ handleJoin }) => {
     //close connection with all peers
     peers.forEach((peer) => peer.id === self.id || peer.closeConnection());
     if (self.socket) {
+      if (state.sfuPeer && state.sfuPeer.isBroadcaster)
+        self.socket.emit("stop streaming", self.room);
       self.socket.emit("leave room", self.room);
       dispatch({ type: "RESET" });
       history.push("/");
